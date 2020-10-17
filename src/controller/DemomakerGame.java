@@ -1,31 +1,23 @@
 package controller; //package
 
 /*Imports*/
-/*********/
 
+import controls.Keyboard;
+import controls.Mouseboard;
 import graphics.RedDote;
 import graphics.Screen;
 import sounds.Sound;
 
-import java.awt.event.*;
-import java.awt.Canvas;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.Toolkit;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
-import java.util.TimerTask;
-import javax.swing.JFrame;
-import javax.swing.Timer;
-
-import controls.Keyboard;
-import controls.Mouseboard;
 
 /*********/
 // class
@@ -42,39 +34,32 @@ public class DemomakerGame extends Canvas implements Runnable {
 	public static int SCALE = 3;
 	public static int winWIDTH = WIDTH;
 	public static int winHEIGHT = HEIGHT;
-	public static String titlename = "DAG - Demomaker's Apple controller";
+	public static String titlename = "DAG - Demomaker's Apple Game";
 
 	Image[] numberImages;
-	ArrayList<Integer> redDotsX = new ArrayList<Integer>();
-	ArrayList<Integer> redDotsY = new ArrayList<Integer>();
-	ArrayList<Integer> numRedDots = new ArrayList<Integer>();
-	ArrayList<Integer> numYellowDots = new ArrayList<Integer>();
-	ArrayList<Integer> yellowDotsX = new ArrayList<Integer>();
-	ArrayList<Integer> yellowDotsY = new ArrayList<Integer>();
+	ArrayList<Integer> redDotsX = new ArrayList<>();
+	ArrayList<Integer> redDotsY = new ArrayList<>();
+	ArrayList<Integer> numRedDots = new ArrayList<>();
+	ArrayList<Integer> numYellowDots = new ArrayList<>();
+	ArrayList<Integer> yellowDotsX = new ArrayList<>();
+	ArrayList<Integer> yellowDotsY = new ArrayList<>();
 	int YellowTitleX = 0;
 	int YellowTitleY = 0;
 	public Random randel = new Random();
-	int RedTitleX = randel.nextInt(DemomakerGame.winWIDTH - 10) + 0;
-	int RedTitleY = randel.nextInt(DemomakerGame.winHEIGHT - 30) + 0;
+	int RedTitleX = randel.nextInt(DemomakerGame.winWIDTH - 10);
+	int RedTitleY = randel.nextInt(DemomakerGame.winHEIGHT - 30);
 	int waittr = 0;
 	int MeterX = 100;
 	int MeterY = 50;
 	int redDotX;
 	int redDotY;
-	int YellowCount = 0;
-	int yellowSpeed = 0;
-	int yellowActualSpeed = 1;
 	public Random rande = new Random();
-	public Random randse = new Random();
 	// Random variables
 	public boolean Option = false;
 	public boolean showFPS = false;
 	public String FPSshower;
 	public boolean ScoreBonus = false;
 	public boolean ResetRed = false;
-	public int GameTimerUnit /* = 0 */;
-	public int GameTimerDozen /* = 0 */;
-	public int GameTimerHundred /* = 3 */;
 	public boolean GameFinish = false;
 	public boolean Replay = false;
 	public static boolean FullScreen = false;
@@ -84,16 +69,10 @@ public class DemomakerGame extends Canvas implements Runnable {
 	int numberTotal = 0;
 	boolean MusicPlay = false;
 	int MoneyAdd = 1;
-	int all;
-	int ALLMoney;
-	int Clicks;
 	int j = 0;
-	boolean StopCounting = false;
 	public static boolean RedBuy = false;
-	int ab = 0;
 	int at = 0;
 	int Second = 1;
-	boolean AddRed = false;
 	boolean Checked = false;
 	boolean CheckedWinner = false;
 	boolean ButtonOne = false;
@@ -116,16 +95,15 @@ public class DemomakerGame extends Canvas implements Runnable {
 	private boolean running = false;
 
 	// Buffering Variables
-	private BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-	private int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
+	private final BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+	private final int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
 
 	// variables
-	private Screen screen;
+	private final Screen screen;
 	public JFrame frame;
-	private Keyboard key;
-	private Mouseboard button;
-	private RedDote Red;
-	private RedDote RedT;
+	private final Keyboard key;
+	private final RedDote Red;
+	private final RedDote RedT;
 	int Score = 0;
 	int TenScores = 0;
 	int OneHundredScores = 0;
@@ -133,13 +111,9 @@ public class DemomakerGame extends Canvas implements Runnable {
 	int ShopButtonX;
 	int ShopButtonY = HEIGHT - 69;
 	int Money = 2000;
-	int Checking = 0;
-	int Checkclicks = 0;
 	int MenuX = winWIDTH - (winWIDTH / 2) - 128 / 2;
 	int MenuY = winHEIGHT - (winHEIGHT / 2) - 72 / 2;
 	boolean ShopOpen = true;
-	boolean NewRedDote = false;
-	boolean ReBuy;
 	// Audio
 
 	// Image URLs
@@ -205,67 +179,61 @@ public class DemomakerGame extends Canvas implements Runnable {
 	// controller Extras Images
 	public Image scored = Toolkit.getDefaultToolkit().getImage(cored);
 	public Image Grid = Toolkit.getDefaultToolkit().getImage(grid);
-	private Image Menu = Toolkit.getDefaultToolkit().getImage(menu);
-	private Image Time = Toolkit.getDefaultToolkit().getImage(time);
-	private Image GameEnd = Toolkit.getDefaultToolkit().getImage(gameend);
-	private Image Restart = Toolkit.getDefaultToolkit().getImage(restart);
-	private Image HighScore = Toolkit.getDefaultToolkit().getImage(highscore);
-	private Image Escap = Toolkit.getDefaultToolkit().getImage(escape);
-	private Image Options = Toolkit.getDefaultToolkit().getImage(options);
-	private Image OptionMenu = Toolkit.getDefaultToolkit().getImage(optionmenu);
-	private Image Meter = Toolkit.getDefaultToolkit().getImage(meter);
-	private Image Sounds = Toolkit.getDefaultToolkit().getImage(sound);
-	private Image Cross = Toolkit.getDefaultToolkit().getImage(cross);
-	private Image Music = Toolkit.getDefaultToolkit().getImage(music);
+	private final Image Menu = Toolkit.getDefaultToolkit().getImage(menu);
+	private final Image Time = Toolkit.getDefaultToolkit().getImage(time);
+	private final Image GameEnd = Toolkit.getDefaultToolkit().getImage(gameend);
+	private final Image Restart = Toolkit.getDefaultToolkit().getImage(restart);
+	private final Image HighScore = Toolkit.getDefaultToolkit().getImage(highscore);
+	private final Image Escap = Toolkit.getDefaultToolkit().getImage(escape);
+	private final Image Options = Toolkit.getDefaultToolkit().getImage(options);
+	private final Image OptionMenu = Toolkit.getDefaultToolkit().getImage(optionmenu);
+	private final Image Meter = Toolkit.getDefaultToolkit().getImage(meter);
+	private final Image Sounds = Toolkit.getDefaultToolkit().getImage(sound);
+	private final Image Cross = Toolkit.getDefaultToolkit().getImage(cross);
+	private final Image Music = Toolkit.getDefaultToolkit().getImage(music);
 
 	// Title Screen Images
-	private Image TitleScreen = Toolkit.getDefaultToolkit().getImage(titlescreen);
+	private final Image TitleScreen = Toolkit.getDefaultToolkit().getImage(titlescreen);
 	// private Image Play = Toolkit.getDefaultToolkit().getImage(play);
-	private Image Difficulty = Toolkit.getDefaultToolkit().getImage(ifficulty);
-	private Image Hard = Toolkit.getDefaultToolkit().getImage(hard);
-	private Image Normal = Toolkit.getDefaultToolkit().getImage(normal);
-	private Image Easy = Toolkit.getDefaultToolkit().getImage(easy);
+	private final Image Difficulty = Toolkit.getDefaultToolkit().getImage(ifficulty);
+	private final Image Hard = Toolkit.getDefaultToolkit().getImage(hard);
+	private final Image Normal = Toolkit.getDefaultToolkit().getImage(normal);
+	private final Image Easy = Toolkit.getDefaultToolkit().getImage(easy);
 	public String difficulty = "Normal";
 
 	// Shop Images
 
-	private Image ShopButton = Toolkit.getDefaultToolkit().getImage(shopbutton);
-	private Image ShopBackground = Toolkit.getDefaultToolkit().getImage(shopbackground);
-	private Image RedDoteImage = Toolkit.getDefaultToolkit().getImage(reddoteimage);
-	private Image RedDoteBuy = Toolkit.getDefaultToolkit().getImage(reddotebuy);
-	private Image RedDoteBuyHover = Toolkit.getDefaultToolkit().getImage(reddotebuyhover);
-	private Image RedDoteBuyAction = Toolkit.getDefaultToolkit().getImage(reddotebuyaction);
-	private Image MoneyAddImage = Toolkit.getDefaultToolkit().getImage(moneyaddimage);
-	private Image MoneyAddBuy = Toolkit.getDefaultToolkit().getImage(moneyaddbuy);
-	private Image MoneyAddBuyAction = Toolkit.getDefaultToolkit().getImage(moneyaddbuyaction);
-	private Image MoneyAddBuyHover = Toolkit.getDefaultToolkit().getImage(moneyaddbuyhover);
-	private Image YellowAutoImage = Toolkit.getDefaultToolkit().getImage(yellowautoimage);
-	private Image YellowAddBuy = Toolkit.getDefaultToolkit().getImage(yellowaddbuy);
-	private Image YellowAddBuyAction = Toolkit.getDefaultToolkit().getImage(yellowaddbuyaction);
-	private Image YellowAddBuyHover = Toolkit.getDefaultToolkit().getImage(yellowaddbuyhover);
+	private final Image ShopButton = Toolkit.getDefaultToolkit().getImage(shopbutton);
+	private final Image ShopBackground = Toolkit.getDefaultToolkit().getImage(shopbackground);
+	private final Image RedDoteImage = Toolkit.getDefaultToolkit().getImage(reddoteimage);
+	private final Image RedDoteBuy = Toolkit.getDefaultToolkit().getImage(reddotebuy);
+	private final Image RedDoteBuyHover = Toolkit.getDefaultToolkit().getImage(reddotebuyhover);
+	private final Image RedDoteBuyAction = Toolkit.getDefaultToolkit().getImage(reddotebuyaction);
+	private final Image MoneyAddImage = Toolkit.getDefaultToolkit().getImage(moneyaddimage);
+	private final Image MoneyAddBuy = Toolkit.getDefaultToolkit().getImage(moneyaddbuy);
+	private final Image MoneyAddBuyAction = Toolkit.getDefaultToolkit().getImage(moneyaddbuyaction);
+	private final Image MoneyAddBuyHover = Toolkit.getDefaultToolkit().getImage(moneyaddbuyhover);
+	private final Image YellowAutoImage = Toolkit.getDefaultToolkit().getImage(yellowautoimage);
+	private final Image YellowAddBuy = Toolkit.getDefaultToolkit().getImage(yellowaddbuy);
+	private final Image YellowAddBuyAction = Toolkit.getDefaultToolkit().getImage(yellowaddbuyaction);
+	private final Image YellowAddBuyHover = Toolkit.getDefaultToolkit().getImage(yellowaddbuyhover);
 
-	private Image Checkbox = Toolkit.getDefaultToolkit().getImage(checkbox);
-	private Image Checker = Toolkit.getDefaultToolkit().getImage(checker);
-	private Image RedReset = Toolkit.getDefaultToolkit().getImage(redreset);
+	private final Image Checkbox = Toolkit.getDefaultToolkit().getImage(checkbox);
+	private final Image Checker = Toolkit.getDefaultToolkit().getImage(checker);
+	private final Image RedReset = Toolkit.getDefaultToolkit().getImage(redreset);
 
 	/* Number Images */
 	/***************/
-	private Image ZERO = Toolkit.getDefaultToolkit().getImage(zero);
-	private Image ONE = Toolkit.getDefaultToolkit().getImage(one);
-	private Image TWO = Toolkit.getDefaultToolkit().getImage(two);
-	private Image THREE = Toolkit.getDefaultToolkit().getImage(three);
-	private Image FOUR = Toolkit.getDefaultToolkit().getImage(four);
-	private Image FIVE = Toolkit.getDefaultToolkit().getImage(five);
-	private Image SIX = Toolkit.getDefaultToolkit().getImage(six);
-	private Image SEVEN = Toolkit.getDefaultToolkit().getImage(seven);
-	private Image EIGHT = Toolkit.getDefaultToolkit().getImage(eight);
-	private Image NINE = Toolkit.getDefaultToolkit().getImage(nine);
-
-	/***************/
-
-	// Other Class adding
-	// TimerTask
-	TimerTask timerTask;
+	private final Image ZERO = Toolkit.getDefaultToolkit().getImage(zero);
+	private final Image ONE = Toolkit.getDefaultToolkit().getImage(one);
+	private final Image TWO = Toolkit.getDefaultToolkit().getImage(two);
+	private final Image THREE = Toolkit.getDefaultToolkit().getImage(three);
+	private final Image FOUR = Toolkit.getDefaultToolkit().getImage(four);
+	private final Image FIVE = Toolkit.getDefaultToolkit().getImage(five);
+	private final Image SIX = Toolkit.getDefaultToolkit().getImage(six);
+	private final Image SEVEN = Toolkit.getDefaultToolkit().getImage(seven);
+	private final Image EIGHT = Toolkit.getDefaultToolkit().getImage(eight);
+	private final Image NINE = Toolkit.getDefaultToolkit().getImage(nine);
 
 	public DemomakerGame() {
 		Dimension size = new Dimension(WIDTH * SCALE, HEIGHT * SCALE);
@@ -273,7 +241,7 @@ public class DemomakerGame extends Canvas implements Runnable {
 		screen = new Screen(WIDTH, HEIGHT);
 		frame = new JFrame();
 		key = new Keyboard();
-		button = new Mouseboard();
+		Mouseboard button = new Mouseboard();
 		Red = new RedDote();
 		RedT = new RedDote();
 		addKeyListener(key);
@@ -375,7 +343,7 @@ public class DemomakerGame extends Canvas implements Runnable {
 			}
 		}
 
-		if (Game == false) {
+		if (!Game) {
 			x = 0;
 			y = 0;
 			if (key.space) {
@@ -385,7 +353,7 @@ public class DemomakerGame extends Canvas implements Runnable {
 		}
 
 		// When the game finishes, Reset Scores
-		if (GameFinish == true) {
+		if (GameFinish) {
 			if (key.p) {
 				Replay = true;
 				Score = 0;
@@ -394,14 +362,14 @@ public class DemomakerGame extends Canvas implements Runnable {
 			}
 		}
 		// When player is playing
-		if (Game == true && !Escape) {
+		if (Game && !Escape) {
 
 			Move = true;
 			if (key.m) {
 				Game = false;
 			}
 			// Moving Speed with different difficulties
-			if (difficulty == "Normal") {
+			if (difficulty.equals("Normal")) {
 				if (key.up) {
 					y = y - 1;
 					if (Sounding)
@@ -423,7 +391,7 @@ public class DemomakerGame extends Canvas implements Runnable {
 						Sound.yellowbeep.play();
 				}
 			}
-			if (difficulty == "Easy") {
+			if (difficulty.equals("Easy")) {
 				if (key.up) {
 					y = y - 1;
 					if (Sounding)
@@ -445,7 +413,7 @@ public class DemomakerGame extends Canvas implements Runnable {
 						Sound.yellowbeep.play();
 				}
 			}
-			if (difficulty == "Hard") {
+			if (difficulty.equals("Hard")) {
 				if (key.up) {
 					y = y - 1;
 					if (Sounding)
@@ -469,11 +437,6 @@ public class DemomakerGame extends Canvas implements Runnable {
 			}
 		}
 
-	}
-
-	// Music Playing
-	public void musicp() {
-		Sound.music.play();
 	}
 
 	// Rendering Things
@@ -491,10 +454,7 @@ public class DemomakerGame extends Canvas implements Runnable {
 		screen.Clear();
 		screen.render();
 
-		for (int i = 0; i < pixels.length; i++) {
-			pixels[i] = screen.pixels[i];
-
-		}
+		System.arraycopy(screen.pixels, 0, pixels, 0, pixels.length);
 
 		// If Player is with red, Touching is true
 		if (!Escape) {
@@ -505,9 +465,9 @@ public class DemomakerGame extends Canvas implements Runnable {
 			}
 
 			if (YellowTitleX == RedTitleX && YellowTitleY == RedTitleY) {
-				RedTitleX = randel.nextInt(winWIDTH - 10) + 0;
-				RedTitleY = randel.nextInt(winHEIGHT - 30) + 0;
-				if (Sounding == true) {
+				RedTitleX = randel.nextInt(winWIDTH - 10);
+				RedTitleY = randel.nextInt(winHEIGHT - 30);
+				if (Sounding) {
 					Sound.redtouch.play();
 				}
 			}
@@ -516,10 +476,11 @@ public class DemomakerGame extends Canvas implements Runnable {
 				if (redDotsX.get(i) == x) {
 					if (redDotsY.get(i) == y) {
 						RedT.Touched = true;
-						redDotsX.remove(i);
-						redDotsY.remove(i);
-						redDotsX.add(rande.nextInt(winWIDTH - 10) + 0);
-						redDotsY.add(rande.nextInt(winHEIGHT - 30) + 0);
+						for (ArrayList<Integer> integers : Arrays.asList(redDotsX, redDotsY)) {
+							integers.remove(i);
+						}
+						redDotsX.add(rande.nextInt(winWIDTH - 10));
+						redDotsY.add(rande.nextInt(winHEIGHT - 30));
 
 					}
 				}
@@ -529,15 +490,15 @@ public class DemomakerGame extends Canvas implements Runnable {
 						RedT.Touched = true;
 						redDotsX.remove(i);
 						redDotsY.remove(i);
-						redDotsX.add(rande.nextInt(winWIDTH - 10) + 0);
-						redDotsY.add(rande.nextInt(winHEIGHT - 30) + 0);
+						redDotsX.add(rande.nextInt(winWIDTH - 10));
+						redDotsY.add(rande.nextInt(winHEIGHT - 30));
 
 					}
 				}
 			}
 
 			// If Touching is true, add money
-			if (Red.Touched == true && Sounding == true || RedT.Touched == true && Sounding == true) {
+			if (Red.Touched && Sounding || RedT.Touched && Sounding) {
 				Sound.redtouch.play();
 				for (int j = 0; j < MoneyAdd; j++) {
 					Money++;
@@ -551,28 +512,28 @@ public class DemomakerGame extends Canvas implements Runnable {
 		winHEIGHT = frame.getHeight();
 
 		// When Red is touched, Actions
-		if (Red.Touched == true) {
+		if (Red.Touched) {
 			Score++;
 			ScoreInt++;
 			ScoreBonus = true;
 			Red.rand = new Random();
 			Red.rands = new Random();
-			Red.RedX = Red.rand.nextInt(WIDTH) + 0;
-			Red.RedY = Red.rands.nextInt(HEIGHT) + 0;
+			Red.RedX = Red.rand.nextInt(WIDTH);
+			Red.RedY = Red.rands.nextInt(HEIGHT);
 			Red.Touched = false;
 
 		}
 		// Red Replacement when Resetting Red or Replay
-		if (ResetRed == true || Replay == true) {
+		if (ResetRed || Replay) {
 			Red.rand = new Random();
 			Red.rands = new Random();
-			Red.RedX = Red.rand.nextInt(WIDTH) + 0;
-			Red.RedY = Red.rands.nextInt(HEIGHT) + 0;
+			Red.RedX = Red.rand.nextInt(WIDTH);
+			Red.RedY = Red.rands.nextInt(HEIGHT);
 			ResetRed = false;
 
 		}
 		// When RedT is touched, Actions
-		if (RedT.Touched == true) {
+		if (RedT.Touched) {
 			Score++;
 			ScoreInt++;
 			ScoreBonus = true;
@@ -605,22 +566,22 @@ public class DemomakerGame extends Canvas implements Runnable {
 		// Red Placement calculating
 		if (Red.RedX >= 250 && Red.RedX <= 325) {
 			Red.rand = new Random();
-			Red.RedX = Red.rand.nextInt(WIDTH - 5) + 0;
+			Red.RedX = Red.rand.nextInt(WIDTH - 5);
 
 			if (Red.RedY >= 0 && Red.RedY <= 56) {
 				Red.rands = new Random();
-				Red.RedY = Red.rands.nextInt(HEIGHT - 30) + 0;
+				Red.RedY = Red.rands.nextInt(HEIGHT - 30);
 			}
 		}
 
 		while (Red.RedX <= 0 || Red.RedX >= 880) {
 			Red.rand = new Random();
-			Red.RedX = Red.rand.nextInt(WIDTH - 5) + 0;
+			Red.RedX = Red.rand.nextInt(WIDTH - 5);
 
 			while (Red.RedY <= 0 || Red.RedY >= 484) {
 
 				Red.rands = new Random();
-				Red.RedY = Red.rands.nextInt(HEIGHT - 30) + 0;
+				Red.RedY = Red.rands.nextInt(HEIGHT - 30);
 
 			}
 		}
@@ -629,32 +590,32 @@ public class DemomakerGame extends Canvas implements Runnable {
 			if (redDotsX.get(i) >= 250 && redDotsX.get(i) <= 325) {
 				rande = new Random();
 				redDotsX.remove(i);
-				redDotsX.add(rande.nextInt(WIDTH) + 0);
+				redDotsX.add(rande.nextInt(WIDTH));
 
 				if (redDotsY.get(i) >= 0 && redDotsY.get(i) <= 56) {
 					rande = new Random();
 					redDotsY.remove(i);
-					redDotsY.add(rande.nextInt(HEIGHT - 30) + 0);
+					redDotsY.add(rande.nextInt(HEIGHT - 30));
 				}
 			}
 
 			while (redDotsX.get(i) <= 0 || redDotsX.get(i) >= frame.getWidth()) {
 				rande = new Random();
 				redDotsX.remove(i);
-				redDotsX.add(rande.nextInt(WIDTH - 5) + 0);
+				redDotsX.add(rande.nextInt(WIDTH - 5));
 
 				while (redDotsY.get(i) <= 0 || redDotsY.get(i) >= frame.getHeight()) {
 
 					rande = new Random();
 					redDotsY.remove(i);
-					redDotsY.add(rande.nextInt(HEIGHT - 30) + 0);
+					redDotsY.add(rande.nextInt(HEIGHT - 30));
 
 				}
 			}
 		}
 
 		// Timer adjusting
-		if (Game == true && FullTimer >= 0 && !Escape) {
+		if (Game && FullTimer >= 0 && !Escape) {
 			FullTimer = FullTimer - 5;
 			if (FullTimer == -1) {
 				FullTimer = 0;
@@ -666,12 +627,12 @@ public class DemomakerGame extends Canvas implements Runnable {
 		}
 
 		// Reset Timer and Score when replayed
-		if (Game == false || Replay == true) {
+		if (!Game || Replay) {
 			FullTimer = 60000;
 			Score = 0;
 		}
 		// When player replays
-		if (Replay == true) {
+		if (Replay) {
 
 			GameFinish = false;
 			x = 0;
@@ -681,15 +642,12 @@ public class DemomakerGame extends Canvas implements Runnable {
 		}
 
 		// Score Calculating
-		if (GameFinish == true) {
+		if (GameFinish) {
 
 			at = 0;
-
-			if (at < 1) {
-				at++;
-				if (Score > Highscore) {
-					Highscore = Score;
-				}
+			at++;
+			if (Score > Highscore) {
+				Highscore = Score;
 			}
 
 			Score = 0;
@@ -702,8 +660,7 @@ public class DemomakerGame extends Canvas implements Runnable {
 		}
 		rande = new Random();
 
-		if (Game == false) {
-			yellowDotsX.clear();
+		if (!Game) {
 			yellowDotsX.clear();
 			yellowDotsY.clear();
 			numYellowDots.clear();
@@ -718,7 +675,7 @@ public class DemomakerGame extends Canvas implements Runnable {
 		{
 
 			// When player isnt playing
-			if (Game == false) {
+			if (!Game) {
 				// TitleScreen showing
 				Sound.music.stop();
 				Score = 0;
@@ -755,7 +712,7 @@ public class DemomakerGame extends Canvas implements Runnable {
 
 			}
 
-			if (MusicPlay && musicwait == 0 && Musicing == true) {
+			if (MusicPlay && musicwait == 0 && Musicing) {
 
 				Sound.music.play();
 
@@ -774,7 +731,7 @@ public class DemomakerGame extends Canvas implements Runnable {
 			}
 
 			// When player is playing
-			if (Game == true) {
+			if (Game) {
 				MusicPlay = true;
 				g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
 				g.drawImage(Grid, 0, 0, getWidth(), getHeight(), this);
@@ -790,23 +747,23 @@ public class DemomakerGame extends Canvas implements Runnable {
 
 				if (Mouseboard.getX() > frame.getWidth() - 75 && Mouseboard.getX() < frame.getWidth() - 25
 						&& Mouseboard.getY() > ShopButtonY + 40 && Mouseboard.getY() < ShopButtonY + 90
-						&& ButtonOneR == true && Mouseboard.getButton() == -1 && !Escape) {
+						&& ButtonOneR && Mouseboard.getButton() == -1 && !Escape) {
 					ResetR = true;
 					ButtonOneR = false;
 				}
 
-				if (Checked == true && CheckedTwo == false && !Escape) {
+				if (Checked && !CheckedTwo && !Escape) {
 					CheckedWinner = true;
 				}
 
-				if (Checked == false && CheckedTwo == true && !Escape) {
+				if (!Checked && CheckedTwo && !Escape) {
 					CheckedTwoWinner = true;
 				}
-				if (Checked == true && CheckedTwo == true && CheckedWinner == true && !Escape) {
+				if (Checked && CheckedTwo && CheckedWinner && !Escape) {
 					Checked = false;
 					CheckedWinner = false;
 				}
-				if (Checked == true && CheckedTwo == true && CheckedTwoWinner == true && !Escape) {
+				if (Checked && CheckedTwo && CheckedTwoWinner && !Escape) {
 					CheckedTwo = false;
 					CheckedTwoWinner = false;
 				}
@@ -818,14 +775,14 @@ public class DemomakerGame extends Canvas implements Runnable {
 				}
 				if (Mouseboard.getX() > frame.getWidth() - 35 && Mouseboard.getX() < frame.getWidth() - 25
 						&& Mouseboard.getY() > HEIGHT / 2 - 50 && Mouseboard.getY() < HEIGHT / 2 - 40
-						&& ButtonOne == true && Mouseboard.getButton() == -1 && !Escape) {
+						&& ButtonOne && Mouseboard.getButton() == -1 && !Escape) {
 					Checked = !Checked;
 					ButtonOne = false;
 				}
 
 				if (Mouseboard.getX() > frame.getWidth() - 35 && Mouseboard.getX() < frame.getWidth() - 25
 						&& Mouseboard.getY() > HEIGHT / 2 - 50 && Mouseboard.getY() < HEIGHT / 2 - 40 && !Escape
-						|| Checked == true) {
+						|| Checked) {
 					g.drawImage(Checker, frame.getWidth() - 35, HEIGHT / 2 - 60, this);
 				}
 
@@ -836,14 +793,14 @@ public class DemomakerGame extends Canvas implements Runnable {
 				}
 				if (Mouseboard.getX() > frame.getWidth() - 50 && Mouseboard.getX() < frame.getWidth() - 40
 						&& Mouseboard.getY() > HEIGHT / 2 - 50 && Mouseboard.getY() < HEIGHT / 2 - 40
-						&& ButtonOneTwo == true && Mouseboard.getButton() == -1 && !Escape) {
+						&& ButtonOneTwo && Mouseboard.getButton() == -1 && !Escape) {
 					CheckedTwo = !CheckedTwo;
 					ButtonOneTwo = false;
 				}
 
 				if (Mouseboard.getX() > frame.getWidth() - 50 && Mouseboard.getX() < frame.getWidth() - 40
 						&& Mouseboard.getY() > HEIGHT / 2 - 50 && Mouseboard.getY() < HEIGHT / 2 - 40 && !Escape
-						|| CheckedTwo == true) {
+						|| CheckedTwo) {
 					g.drawImage(Checker, frame.getWidth() - 50, HEIGHT / 2 - 60, this);
 				}
 
@@ -855,26 +812,26 @@ public class DemomakerGame extends Canvas implements Runnable {
 				// Opening and Closing Shop
 				if (Mouseboard.getX() > ShopButtonX && Mouseboard.getY() > ShopButtonY
 						&& Mouseboard.getX() < ShopButtonX + 100 && Mouseboard.getY() < ShopButtonY + 50
-						&& Checked == false && !Escape) {
+						&& !Checked && !Escape) {
 
-					if (ShopButtonY >= 247 && ShopOpen == true) {
+					if (ShopButtonY >= 247 && ShopOpen) {
 						ShopButtonY--;
 					}
-					if (ShopButtonY <= 247 || ShopOpen == false) {
+					if (ShopButtonY <= 247 || !ShopOpen) {
 						ShopButtonY++;
 						ShopOpen = false;
 					}
-					if (ShopButtonY >= frame.getHeight() - 69 && ShopOpen == false) {
+					if (ShopButtonY >= frame.getHeight() - 69 && !ShopOpen) {
 						ShopOpen = true;
 					}
 
 				}
 
-				if (Checked == true) {
+				if (Checked) {
 					ShopButtonY = 247;
 				}
 
-				if (CheckedTwo == true) {
+				if (CheckedTwo) {
 					ShopButtonY = frame.getHeight() - 69;
 				}
 
@@ -883,17 +840,16 @@ public class DemomakerGame extends Canvas implements Runnable {
 				g.drawString("Money: " + Money, ShopButtonX + 25, ShopButtonY);
 
 				// Show Time if Time hasnt run out
-				if (GameFinish != true) {
+				if (!GameFinish) {
 					g.drawImage(Time, 615, 0, this);
 				}
 				// Show Highscore if Time has run out
-				if (GameFinish == true) {
+				if (GameFinish) {
 					g.drawImage(HighScore, 604, 25, this);
 				}
 				/* Time Drawing */
-				/****************/
 				/* GameTimerHundred */
-				if (GameFinish == false) {
+				if (!GameFinish) {
 					int TimerNumber = FullTimer / 200;
 					Image[] TimerImages = TransformNumbers(TimerNumber);
 					g.drawImage(TimerImages[2], 604, 56, this);
@@ -901,10 +857,9 @@ public class DemomakerGame extends Canvas implements Runnable {
 					g.drawImage(TimerImages[0], 722, 56, this);
 				}
 
-				if (GameFinish == true) {
+				if (GameFinish) {
 
 					/* Highscore Drawing */
-					/****************/
 					/* HighScoreThousand */
 					Image[] HighscoreImages = TransformNumbers(Highscore);
 					g.drawImage(HighscoreImages[2], 604, 56, this);
@@ -913,34 +868,30 @@ public class DemomakerGame extends Canvas implements Runnable {
 				}
 
 				/* Score Drawing */
-				/**************/
 				/* Units */
 				Image[] ScoreImages = TransformNumbers(Score);
 				g.drawImage(ScoreImages[2], 256, 56, this);
 				g.drawImage(ScoreImages[1], 315, 56, this);
 				g.drawImage(ScoreImages[0], 374, 56, this);
 
-				/*********************/
 				if (Score >= 1000) {
 					g.setColor(Color.WHITE);
 					g.drawString("" + (Score / 1000) + "", (374 + 59), 16);
 				}
 				// Adding Score only when Red is Touched
-				if (ScoreBonus == true) {
-				}
-				if (Red.Touched == false) {
+				if (!Red.Touched) {
 					ScoreBonus = false;
 				}
 
-				if (RedBuy == true) {
+				if (RedBuy) {
 					numRedDots.add(1);
-					redDotsX.add(rande.nextInt(winWIDTH - 10) + 0);
-					redDotsY.add(rande.nextInt(winHEIGHT - 30) + 0);
+					redDotsX.add(rande.nextInt(winWIDTH - 10));
+					redDotsY.add(rande.nextInt(winHEIGHT - 30));
 
 					RedBuy = false;
 				}
 
-				if (GameFinish == false) {
+				if (!GameFinish) {
 					// Yellow Dote Showing
 
 					g.setColor(Color.YELLOW);
@@ -951,7 +902,7 @@ public class DemomakerGame extends Canvas implements Runnable {
 					Red.render(g);
 
 					// Red Reset Action
-					if (ResetR == true) {
+					if (ResetR) {
 						Red.Random();
 						Red.render(g);
 						ResetR = false;
@@ -991,11 +942,11 @@ public class DemomakerGame extends Canvas implements Runnable {
 								}
 							}
 
-							if (numYellowDots.size() <= numRedDots.size() || numYellowDots.size() == 1) {
+							if (numYellowDots.size() <= numRedDots.size()) {
 								Terminal = i;
 							}
 							if (yellowDotsY.get(i) < redDotsY.get(Terminal)
-									&& redDotsY.get(Terminal) != yellowDotsY.get(i) && !Escape) {
+									&& !redDotsY.get(Terminal).equals(yellowDotsY.get(i)) && !Escape) {
 								yellowDotsY.set(i, yellowDotsY.get(i) + 1);
 								// System.out.println("Y is smaller");
 								waittr = 0;
@@ -1003,7 +954,7 @@ public class DemomakerGame extends Canvas implements Runnable {
 							}
 
 							if (redDotsY.get(Terminal) < yellowDotsY.get(i)
-									&& redDotsY.get(Terminal) != yellowDotsY.get(i) && !Escape) {
+									&& !redDotsY.get(Terminal).equals(yellowDotsY.get(i)) && !Escape) {
 								yellowDotsY.set(i, yellowDotsY.get(i) - 1);
 								// System.out.println("Y is bigger");
 								waittr = 0;
@@ -1011,7 +962,7 @@ public class DemomakerGame extends Canvas implements Runnable {
 							}
 
 							if (redDotsX.get(Terminal) > yellowDotsX.get(i)
-									&& yellowDotsX.get(i) != redDotsX.get(Terminal) && !Escape) {
+									&& !yellowDotsX.get(i).equals(redDotsX.get(Terminal)) && !Escape) {
 								yellowDotsX.set(i, yellowDotsX.get(i) + 1);
 								// System.out.println("X is smaller");
 								waittr = 0;
@@ -1019,7 +970,7 @@ public class DemomakerGame extends Canvas implements Runnable {
 							}
 
 							if (redDotsX.get(Terminal) < yellowDotsX.get(i)
-									&& yellowDotsX.get(i) != redDotsX.get(Terminal) && !Escape) {
+									&& !yellowDotsX.get(i).equals(redDotsX.get(Terminal)) && !Escape) {
 								yellowDotsX.set(i, yellowDotsX.get(i) - 1);
 								// System.out.println("X is bigger");
 								waittr = 0;
@@ -1034,7 +985,7 @@ public class DemomakerGame extends Canvas implements Runnable {
 
 					}
 
-					if (Game == true) {
+					if (Game) {
 						g.drawImage(ShopButton, ShopButtonX, ShopButtonY, this);
 						g.drawImage(ShopBackground, frame.getWidth() - 900, ShopButtonY + 30, this);
 						g.drawImage(RedDoteImage, frame.getWidth() - 745, ShopButtonY + 40, this);
@@ -1107,8 +1058,8 @@ public class DemomakerGame extends Canvas implements Runnable {
 									Money = Money - 50;
 									j++;
 									numYellowDots.add(1);
-									yellowDotsX.add(rande.nextInt(DemomakerGame.winWIDTH - 10) + 0);
-									yellowDotsY.add(rande.nextInt(DemomakerGame.winHEIGHT - 30) + 0);
+									yellowDotsX.add(rande.nextInt(DemomakerGame.winWIDTH - 10));
+									yellowDotsY.add(rande.nextInt(DemomakerGame.winHEIGHT - 30));
 
 								}
 
@@ -1123,7 +1074,7 @@ public class DemomakerGame extends Canvas implements Runnable {
 				g.drawImage(scored, 250, 0, this);
 
 				// Time runs out
-				if (GameFinish == true) {
+				if (GameFinish) {
 					// Show to tell to restart
 					numYellowDots.removeAll(yellowDotsX);
 					numYellowDots.removeAll(yellowDotsY);
@@ -1136,10 +1087,10 @@ public class DemomakerGame extends Canvas implements Runnable {
 				}
 				GameTimer = true;
 			}
-			if (key.esc && key.kr && Game != false && Option == false) {
+			if (key.esc && key.kr && Game && !Option) {
 				Escape = !Escape;
 				key.kr = false;
-				if (Escape == false && Musicing == true) {
+				if (!Escape && Musicing) {
 					Sound.music.play();
 				}
 			}
@@ -1164,9 +1115,9 @@ public class DemomakerGame extends Canvas implements Runnable {
 				g.drawImage(Options, MenuX, MenuY - 144, 128, 72, this);
 				if (Mouseboard.getButton() == 1) {
 					if (Mouseboard.getX() > MenuX && Mouseboard.getX() < MenuX + 128 && Mouseboard.getY() > MenuY - 144
-							&& Mouseboard.getY() < MenuY - 72 && Mouseboard.mouseRelease && Option == false) {
+							&& Mouseboard.getY() < MenuY - 72 && Mouseboard.mouseRelease && !Option) {
 
-						Option = !Option;
+						Option = true;
 						Mouseboard.mouseRelease = false;
 
 					}
@@ -1182,24 +1133,20 @@ public class DemomakerGame extends Canvas implements Runnable {
 
 					g.drawImage(Music, 150, 150, null);
 
-					if (Mouseboard.mouseRelease == true && Mouseboard.getButton() == 1 && Mouseboard.getX() >= 100
+					if (Mouseboard.mouseRelease && Mouseboard.getButton() == 1 && Mouseboard.getX() >= 100
 							&& Mouseboard.getX() <= 150 && Mouseboard.getY() >= 150 && Mouseboard.getY() <= 200) {
 						Sounding = !Sounding;
 						Mouseboard.mouseRelease = false;
 					}
-					if (Mouseboard.mouseRelease == true && Mouseboard.getButton() == 1 && Mouseboard.getX() >= 150
+					if (Mouseboard.mouseRelease && Mouseboard.getButton() == 1 && Mouseboard.getX() >= 150
 							&& Mouseboard.getX() <= 200 && Mouseboard.getY() >= 150 && Mouseboard.getY() <= 200) {
 						Musicing = !Musicing;
 						Mouseboard.mouseRelease = false;
 					}
 
-					if (Sounding == false) {
-						g.drawImage(Cross, 100, 150, null);
-					}
+					if (!Sounding) g.drawImage(Cross, 100, 150, null);
 
-					if (Musicing == false) {
-						g.drawImage(Cross, 150, 150, null);
-					}
+					if (!Musicing) g.drawImage(Cross, 150, 150, null);
 
 					if (key.h) {
 						MeterX = 380;
@@ -1261,17 +1208,18 @@ public class DemomakerGame extends Canvas implements Runnable {
 
 	// loading JFrame
 	public void FullScreen() {
-		if (FullScreen == true && key.kr == true) {
+		if (FullScreen && key.kr) {
 			frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 			frame.setVisible(true);
 			frame.setAlwaysOnTop(true);
 			frame.setResizable(false);
 		}
-		if (FullScreen == false && key.kr == true) {
-			frame.setSize(WIDTH, HEIGHT);
-			frame.setAlwaysOnTop(false);
-			frame.setResizable(true);
+		if (FullScreen || !key.kr) {
+			return;
 		}
+		frame.setSize(WIDTH, HEIGHT);
+		frame.setAlwaysOnTop(false);
+		frame.setResizable(true);
 	}
 
 	public void CalculatePath(int yellowX, int yellowY, int x, int y, int distanceX, int distanceY) {
@@ -1293,43 +1241,14 @@ public class DemomakerGame extends Canvas implements Runnable {
 				numberCharacters[i] = numberToast[numberToast.length - 1 - i];
 			}
 		}
-		if (number != 0 && numCharactersNeeded <= numberCharacters.length) {
+		if (number != 0) {
 			numberImages = new Image[numberCharacters.length];
-		} else if (numCharactersNeeded > numberCharacters.length || number == 0) {
+		} else {
 			numberImages = new Image[numCharactersNeeded];
 		}
 
 		for (int i = 0; i < numberCharacters.length; i++) {
-			if (numberCharacters[i] == '0') {
-				numberImages[i] = ZERO;
-			}
-			if (numberCharacters[i] == '1') {
-				numberImages[i] = ONE;
-			}
-			if (numberCharacters[i] == '2') {
-				numberImages[i] = TWO;
-			}
-			if (numberCharacters[i] == '3') {
-				numberImages[i] = THREE;
-			}
-			if (numberCharacters[i] == '4') {
-				numberImages[i] = FOUR;
-			}
-			if (numberCharacters[i] == '5') {
-				numberImages[i] = FIVE;
-			}
-			if (numberCharacters[i] == '6') {
-				numberImages[i] = SIX;
-			}
-			if (numberCharacters[i] == '7') {
-				numberImages[i] = SEVEN;
-			}
-			if (numberCharacters[i] == '8') {
-				numberImages[i] = EIGHT;
-			}
-			if (numberCharacters[i] == '9') {
-				numberImages[i] = NINE;
-			}
+			numberImages[i] = getImageFromCharacter(numberCharacters[i]);
 		}
 
 		if (numCharactersNeeded > numberToast.length) {
@@ -1344,6 +1263,21 @@ public class DemomakerGame extends Canvas implements Runnable {
 		}
 		return numberImages;
 
+	}
+
+	private Image getImageFromCharacter(char character) {
+		return switch (character) {
+			case '1' -> ONE;
+			case '2' -> TWO;
+			case '3' -> THREE;
+			case '4' -> FOUR;
+			case '5' -> FIVE;
+			case '6' -> SIX;
+			case '7' -> SEVEN;
+			case '8' -> EIGHT;
+			case '9' -> NINE;
+			default -> ZERO;
+		};
 	}
 
 	public static void main(String[] args) {
