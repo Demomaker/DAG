@@ -23,12 +23,6 @@ public class Keyboard implements KeyListener {
 		m = keys[KeyEvent.VK_M];
 		p = keys[KeyEvent.VK_P];
 		esc = keys[KeyEvent.VK_ESCAPE];
-
-		for (int i = 0; i < keys.length; i++) {
-			if (keys[i]) {
-
-			}
-		}
 	}
 
 	public void keyPressed(KeyEvent e) {

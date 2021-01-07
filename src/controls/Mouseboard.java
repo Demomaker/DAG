@@ -1,5 +1,8 @@
 package controls;
 
+import logic.Button;
+import logic.Vector3;
+
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -12,6 +15,9 @@ public class Mouseboard implements MouseListener, MouseMotionListener {
 	public static int mouseHold = -1;
 	public static boolean mouseRelease = false;
 	public static boolean mouseReleas = false;
+	public static boolean mousePressed = false;
+	public static boolean mouseLeftButtonPressed = false;
+	public static boolean mouseRightButtonPressed = false;
 
 	public static int getX() {
 		return mouseX;
@@ -30,6 +36,13 @@ public class Mouseboard implements MouseListener, MouseMotionListener {
 		// TODO Auto-generated method stub
 		// mouseButton = 0;
 		mouseHold = 0;
+		mousePressed = true;
+		if(e.getButton() == MouseEvent.BUTTON1) {
+			mouseLeftButtonPressed = true;
+		}
+		if(e.getButton() == MouseEvent.BUTTON2) {
+			mouseRightButtonPressed = true;
+		}
 	}
 
 	@Override
@@ -38,6 +51,12 @@ public class Mouseboard implements MouseListener, MouseMotionListener {
 		mouseButton = e.getButton();
 		mouseHold = 0;
 		mouseReleas = false;
+		if(e.getButton() == MouseEvent.BUTTON1) {
+			mouseLeftButtonPressed = true;
+		}
+		if(e.getButton() == MouseEvent.BUTTON2) {
+			mouseRightButtonPressed = true;
+		}
 
 		// TODO Auto-generated method stub
 	}
@@ -50,6 +69,9 @@ public class Mouseboard implements MouseListener, MouseMotionListener {
 		mouseRelease = true;
 		mouseReleas = true;
 		mouseHold = 0;
+		mousePressed = false;
+		mouseLeftButtonPressed = false;
+		mouseRightButtonPressed = false;
 
 	}
 
@@ -83,6 +105,10 @@ public class Mouseboard implements MouseListener, MouseMotionListener {
 		mouseX = e.getX();
 		mouseY = e.getY();
 
+	}
+
+	public static boolean mousePressedButton(Button button) {
+		return mouseLeftButtonPressed && button.touchesObjectAt(new Vector3<>(Mouseboard.getX() * 1.0f, Mouseboard.getY() * 1.0f, 0f));
 	}
 
 }

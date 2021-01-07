@@ -1,31 +1,69 @@
 package graphics;
 
+import logic.Box;
+import logic.Entity;
+import logic.Transform;
+import logic.Vector3;
+
 public class Screen {
 
-	private int width, height;
-	public int[] pixels;
+	private Transform transform = new Transform();
+	private Box screenBox = new Box();
 
 	public Screen(int width, int height) {
-		this.width = width;
-		this.height = height;
-
-		pixels = new int[width * height];
+		setSize(width, height);
 	}
 
-	public void Clear() {
-		for (int i = 0; i < pixels.length; i++) {
-			pixels[i] = 0;
-		}
-
+	public void setSize(int width, int height) {
+		transform.setSize(new Vector3<>(width * 1.0f, height * 1.0f, 0f));
+		screenBox.setInnerBorderX(0);
+		screenBox.setOuterBorderY(0);
+		screenBox.setOuterBorderX(width);
+		screenBox.setOuterBorderY(height);
 	}
 
-	public void render() {
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
-				pixels[x + y * width] = 0x000000;
-
-			}
-		}
+	public float getWidth() {
+		return transform.getSize().getX();
 	}
 
+	public float getHeight() {
+		return transform.getSize().getY();
+	}
+
+
+
+	public boolean entityIsWithin(Entity entity) {
+		Vector3<Float> entityPosition = entity.getPosition();
+		Vector3<Float> entityTopLeftCorner = entity.getTopLeftCorner();
+		Vector3<Float> entityBottomRightCorner = entity.getBottomRightCorner();
+		float entityInnerX = entityPosition.getX() + entityTopLeftCorner.getX();
+		float entityInnerY = entityPosition.getY() + entityTopLeftCorner.getY();
+		float entityOuterX = entityPosition.getX() + entityBottomRightCorner.getX();
+		float entityOuterY = entityPosition.getY() + entityBottomRightCorner.getY();
+		boolean case1 = screenBox.getTopLeftCorner().getX() < entityInnerX
+				&& screenBox.getBottomRightCorner().getX() > entityInnerX
+				&& screenBox.getTopLeftCorner().getY() < entityInnerY
+				&& screenBox.getBottomRightCorner().getY() > entityInnerY;
+		boolean case2 = screenBox.getTopLeftCorner().getX() < entityOuterX
+				&& screenBox.getBottomRightCorner().getX() > entityOuterX
+				&& screenBox.getTopLeftCorner().getY() < entityOuterY
+				&& screenBox.getBottomRightCorner().getY() > entityOuterY;
+		return case1 || case2;
+	}
+
+	public boolean entityXIsOnLeftSideOfBounds(Entity entity) {
+		return entity.getPosition().getX() + entity.getBottomRightCorner().getX() < screenBox.getTopLeftCorner().getX();
+	}
+
+	public boolean entityXIsOnRightSideOfBounds(Entity entity) {
+		return entity.getPosition().getX() + entity.getTopLeftCorner().getX() > screenBox.getBottomRightCorner().getX();
+	}
+
+	public boolean entityYIsOnTopSideOfBounds(Entity entity) {
+		return entity.getPosition().getY() + entity.getBottomRightCorner().getY() < screenBox.getTopLeftCorner().getY();
+	}
+
+	public boolean entityYIsOnBottomSideOfBounds(Entity entity) {
+		return entity.getPosition().getY() + entity.getTopLeftCorner().getY() > screenBox.getBottomRightCorner().getY();
+	}
 }
