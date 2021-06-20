@@ -16,6 +16,7 @@ import static net.demomaker.applegame.game.consts.SharedObjectKeys.HighscoreKey;
 public class EndScene implements Scene {
     public int Highscore = 0;
     private boolean finishedLoading = false;
+    private EndScene referredThis = this;
 
     // Audio
     private final AdvancedImage GameEnd = AssetRetreiver.getImageFromPath("/resources/GameFinish.png");
@@ -63,11 +64,11 @@ public class EndScene implements Scene {
 
     }
 
-    private class KeyboardListener extends Keyboard.KeyboardListener {
+    private Keyboard.KeyboardListener keyboardListener = new Keyboard.KeyboardListener(){
 
         @Override
         public void onKeyPressed(int key) {
-            if(SceneManager.getActiveScene() != this) return;
+            if(SceneManager.getActiveScene() != referredThis) return;
             if (key == KeyEvent.VK_P) {
                 SceneManager.setActiveScene(SceneManager.getSceneByName("GameScene"));
             }
@@ -75,10 +76,10 @@ public class EndScene implements Scene {
 
         @Override
         public void onKeyReleased(int key) {
-            if(SceneManager.getActiveScene() != this) return;
+            if(SceneManager.getActiveScene() != referredThis) return;
             if (key == KeyEvent.VK_ESCAPE) {
                 SceneManager.setActiveScene(SceneManager.getSceneByName("TitleScene"));
             }
         }
-    }
+    };
 }

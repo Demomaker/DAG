@@ -23,40 +23,13 @@ public class OptionScene implements Scene {
     private Difficulty difficulty = Difficulty.Easy;
     private final Slider difficultySlider = new Slider();
     private String returnSceneName = "GameScene";
-    private final KeyboardListener keyboardListener = new KeyboardListener();
     private final OptionScene referredThis = this;
     private CheckBox musicButton;
     private CheckBox soundButton;
     private boolean finishedLoading = false;
     private int lastMouseX = 0;
-    private int lastMouseY = 0;
     private boolean movingButtonPressed = false;
     private boolean movingButtonHovered = false;
-
-    private class KeyboardListener extends Keyboard.KeyboardListener {
-        @Override
-        public void onKeyPressed(int key) {
-            if(SceneManager.getActiveScene() != referredThis) return;
-            if (key == KeyEvent.VK_H) {
-                setDifficultySliderValue(Difficulty.Hard);
-            }
-            if (key == KeyEvent.VK_N) {
-                setDifficultySliderValue(Difficulty.Normal);
-            }
-            if (key == KeyEvent.VK_E) {
-                setDifficultySliderValue(Difficulty.Easy);
-            }
-        }
-
-        @Override
-        public void onKeyReleased(int key) {
-            if(SceneManager.getActiveScene() != referredThis) return;
-            if (key == KeyEvent.VK_ESCAPE) {
-                SceneManager.setActiveScene(SceneManager.getSceneByName(returnSceneName));
-            }
-        }
-    }
-
     private final AdvancedImage OptionMenu = AssetRetreiver.getImageFromPath("/resources/OptionMenu.png");
     private final AdvancedImage Meter = AssetRetreiver.getImageFromPath("/resources/Meter.png");
     private final AdvancedImage Sounds = AssetRetreiver.getImageFromPath("/resources/Sound.png");
@@ -66,39 +39,6 @@ public class OptionScene implements Scene {
     private final AdvancedImage Hard = AssetRetreiver.getImageFromPath("/resources/Hard.png");
     private final AdvancedImage Normal = AssetRetreiver.getImageFromPath("/resources/Normal.png");
     private final AdvancedImage Easy = AssetRetreiver.getImageFromPath("/resources/Easy.png");
-
-
-    private void initGameButtons() {
-        musicButton = new CheckBox();
-        soundButton = new CheckBox();
-        soundButton.setUncheckedImage(Cross);
-        soundButton.setCheckedImage(Sounds);
-        soundButton.setPosition(new Vector3<>(100f, 150f,0f));
-        soundButton.setSize(new Vector3<>(50f, 50f, 0f));
-        musicButton.setUncheckedImage(Cross);
-        musicButton.setCheckedImage(Music);
-        musicButton.setPosition(new Vector3<>(150f, 150f, 0f));
-        musicButton.setSize(new Vector3<>(50f, 50f, 0f));
-        difficultySlider.setMinValue(0);
-        difficultySlider.setMaxValue(100);
-        difficultySlider.setSliderForegroundImage(Meter);
-        difficultySlider.setSliderBackgroundImage(DifficultyImage);
-        difficultySlider.setSliderImage(Easy);
-        difficultySlider.setSize(new Vector3<>(420f, 42f, 0f));
-        difficultySlider.setSliderSize(new Vector3<>(140f,42f,0f));
-        difficultySlider.setPosition(new Vector3<>(100f, 50f, 0f));
-        difficultySlider.setSliderPosition(new Vector3<>(100f, 50f, 0f));
-        setDifficultySliderValue(Difficulty.Easy);
-        setDifficultySliderValue(difficulty);
-        soundButton.setActive(true);
-        musicButton.setActive(true);
-        soundButton.setChecked((Boolean) SceneManager.getSharedObject(PlaySoundKey));
-        musicButton.setChecked((Boolean) SceneManager.getSharedObject(PlayMusicKey));
-    }
-
-    private void setDifficultySliderValue(Difficulty difficulty) {
-        difficultySlider.setSliderValue(50 * (difficulty.ordinal()));
-    }
 
     @Override
     public boolean finishedLoading() {
@@ -145,10 +85,6 @@ public class OptionScene implements Scene {
         }
     }
 
-    private boolean canSlide() {
-        return movingButtonPressed && movingButtonHovered;
-    }
-
     @Override
     public void draw() {
         GraphicsManager.drawImage(OptionMenu, new Vector3<Float>(0f, 0f, 0f));
@@ -171,11 +107,46 @@ public class OptionScene implements Scene {
         finishedLoading = true;
     }
 
+    private void initGameButtons() {
+        musicButton = new CheckBox();
+        soundButton = new CheckBox();
+        soundButton.setUncheckedImage(Cross);
+        soundButton.setCheckedImage(Sounds);
+        soundButton.setPosition(new Vector3<>(100f, 150f,0f));
+        soundButton.setSize(new Vector3<>(50f, 50f, 0f));
+        musicButton.setUncheckedImage(Cross);
+        musicButton.setCheckedImage(Music);
+        musicButton.setPosition(new Vector3<>(150f, 150f, 0f));
+        musicButton.setSize(new Vector3<>(50f, 50f, 0f));
+        difficultySlider.setMinValue(0);
+        difficultySlider.setMaxValue(100);
+        difficultySlider.setSliderForegroundImage(Meter);
+        difficultySlider.setSliderBackgroundImage(DifficultyImage);
+        difficultySlider.setSliderImage(Easy);
+        difficultySlider.setSize(new Vector3<>(420f, 42f, 0f));
+        difficultySlider.setSliderSize(new Vector3<>(140f,42f,0f));
+        difficultySlider.setPosition(new Vector3<>(100f, 50f, 0f));
+        difficultySlider.setSliderPosition(new Vector3<>(100f, 50f, 0f));
+        setDifficultySliderValue(Difficulty.Easy);
+        setDifficultySliderValue(difficulty);
+        soundButton.setActive(true);
+        musicButton.setActive(true);
+        soundButton.setChecked((Boolean) SceneManager.getSharedObject(PlaySoundKey));
+        musicButton.setChecked((Boolean) SceneManager.getSharedObject(PlayMusicKey));
+    }
+
+    private void setDifficultySliderValue(Difficulty difficulty) {
+        difficultySlider.setSliderValue(50 * (difficulty.ordinal()));
+    }
+
+    private boolean canSlide() {
+        return movingButtonPressed && movingButtonHovered;
+    }
+
     private Mouseboard.MouseboardListener mouseboardListener = new Mouseboard.MouseboardListener() {
         @Override
         public void onMouseMoved(MouseEvent mouse) {
             lastMouseX = mouse.getX();
-            lastMouseY = mouse.getY();
         }
 
         @Override
@@ -220,6 +191,30 @@ public class OptionScene implements Scene {
         public void onHover(Button button) {
             if(button == difficultySlider.getMovingButton())
                 movingButtonHovered = true;
+        }
+    };
+
+    private Keyboard.KeyboardListener keyboardListener = new Keyboard.KeyboardListener(){
+        @Override
+        public void onKeyPressed(int key) {
+            if(SceneManager.getActiveScene() != referredThis) return;
+            if (key == KeyEvent.VK_H) {
+                setDifficultySliderValue(Difficulty.Hard);
+            }
+            if (key == KeyEvent.VK_N) {
+                setDifficultySliderValue(Difficulty.Normal);
+            }
+            if (key == KeyEvent.VK_E) {
+                setDifficultySliderValue(Difficulty.Easy);
+            }
+        }
+
+        @Override
+        public void onKeyReleased(int key) {
+            if(SceneManager.getActiveScene() != referredThis) return;
+            if (key == KeyEvent.VK_ESCAPE) {
+                SceneManager.setActiveScene(SceneManager.getSceneByName(returnSceneName));
+            }
         }
     };
 }

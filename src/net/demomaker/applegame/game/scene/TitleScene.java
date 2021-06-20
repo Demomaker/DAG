@@ -2,7 +2,6 @@ package net.demomaker.applegame.game.scene;
 
 import net.demomaker.applegame.engine.graphics.GameWindow;
 import net.demomaker.applegame.engine.graphics.GraphicsManager;
-import net.demomaker.applegame.game.controller.DemomakerGame;
 import net.demomaker.applegame.engine.input.Keyboard;
 import net.demomaker.applegame.engine.scene.Scene;
 import net.demomaker.applegame.engine.scene.SceneManager;
@@ -16,56 +15,25 @@ import net.demomaker.applegame.engine.util.AssetRetreiver;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 import static net.demomaker.applegame.game.consts.SharedObjectKeys.*;
 
 public class TitleScene implements Scene {
-    private Ally titleAlly = new Ally();
-    private Apple titleApple = new Apple();
+    private Ally titleAlly = null;
+    private Apple titleApple = null;
     private final Random random = new Random();
     public boolean showFPS = false;
     public String FPSstring;
     private boolean playSounds = false;
     private Button optionButton = new Button();
-    private Keyboard.KeyboardListener keyboardListener = new KeyboardListener();
 
     // Title Screen Images
     private final AdvancedImage TitleScreen = AssetRetreiver.getImageFromPath("/resources/titlescreen.png");
     private final AdvancedImage Options = AssetRetreiver.getImageFromPath("/resources/Options.png");
     private boolean finishedLoading = false;
-
-    private Apple goodEntityTouchApple() {
-        if (playSounds) {
-            Sound.redtouch.play();
-        }
-        return generateNewApple();
-    }
-
-    private Apple generateNewApple() {
-        Apple apple = new Apple();
-        int appleX = random.nextInt(DemomakerGame.winWIDTH - 10);
-        int appleY = random.nextInt(DemomakerGame.winHEIGHT - 30);
-        apple.setPosition(new Vector3<Float>(appleX * 1.0f, appleY * 1.0f, 0f));
-        return apple;
-    }
-
-    private Ally generateNewAlly() {
-        Ally ally = new Ally();
-        int allyX = random.nextInt(DemomakerGame.winWIDTH - 10);
-        int allyY = random.nextInt(DemomakerGame.winHEIGHT - 30);
-        ally.setPosition(new Vector3<Float>(allyX * 1.0f,allyY * 1.0f,0f));
-        return ally;
-    }
-
-    private void initGameButtons() {
-        optionButton.setActive(true);
-        optionButton.setPosition(new Vector3<>(GameWindow.getWidth() / 2f - 64f, GameWindow.getHeight() / 2f - 36f, 0f));
-        optionButton.setSize(new Vector3<>(128f, 72f, 0f));
-        optionButton.setButtonNormalStateImage(Options);
-        optionButton.setButtonPressedStateImage(Options);
-        optionButton.setButtonReleasedStateImage(Options);
-    }
 
     @Override
     public boolean finishedLoading() {
@@ -80,8 +48,10 @@ public class TitleScene implements Scene {
     @Override
     public void init() {
         playSounds = (Boolean) SceneManager.getSharedObject(PlaySoundKey);
-        titleApple = generateNewApple();
-        titleAlly = generateNewAlly();
+        titleApple = Apple.generateNewApple();
+        Apple appleArray[] = new Apple[1];
+        appleArray[0] = titleApple;
+        titleAlly = Ally.generateNewAlly(Arrays.asList(appleArray));
         titleAlly.SetTarget(titleApple);
         initGameButtons();
         finishedLoading = true;
@@ -103,9 +73,12 @@ public class TitleScene implements Scene {
     @Override
     public void draw() {
         GraphicsManager.drawImage(TitleScreen, new Vector3<>(0f,0f,0f));
-        optionButton.draw();
-        titleAlly.draw();
-        titleApple.draw();
+        if(optionButton != null)
+            optionButton.draw();
+        if(titleAlly != null)
+            titleAlly.draw();
+        if(titleApple != null)
+            titleApple.draw();
         if (showFPS) {
             GraphicsManager.drawString(Color.WHITE, FPSstring, new Vector3<Float>(0f, 10f, 0f));
         }
@@ -114,6 +87,7 @@ public class TitleScene implements Scene {
     @Override
     public void cleanup() {
         optionButton.setActive(false);
+        titleApple = null;
     }
 
     @Override
@@ -121,11 +95,23 @@ public class TitleScene implements Scene {
         optionButton.setActive(true);
     }
 
-    private class KeyboardListener extends Keyboard.KeyboardListener {
-        public KeyboardListener() {
-            super();
+    private Apple goodEntityTouchApple() {
+        if (playSounds) {
+            Sound.redtouch.play();
         }
+        return Apple.generateNewApple();
+    }
 
+    private void initGameButtons() {
+        optionButton.setActive(true);
+        optionButton.setPosition(new Vector3<>(GameWindow.getWidth() / 2f - 64f, GameWindow.getHeight() / 2f - 36f, 0f));
+        optionButton.setSize(new Vector3<>(128f, 72f, 0f));
+        optionButton.setButtonNormalStateImage(Options);
+        optionButton.setButtonPressedStateImage(Options);
+        optionButton.setButtonReleasedStateImage(Options);
+    }
+
+    private Keyboard.KeyboardListener keyboardListener = new Keyboard.KeyboardListener() {
         @Override
         public void onKeyPressed(int key) {
             if(SceneManager.getActiveScene() != SceneManager.getSceneByName("TitleScene")) return;
@@ -137,6 +123,9 @@ public class TitleScene implements Scene {
             if (key == KeyEvent.VK_SPACE) {
                 SceneManager.setActiveScene(SceneManager.getSceneByName("GameScene"));
             }
+            if (key == KeyEvent.VK_ESCAPE) {
+                GameWindow.close();
+            }
         }
-    }
+    };
 }

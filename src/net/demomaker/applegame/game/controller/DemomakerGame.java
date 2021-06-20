@@ -168,6 +168,7 @@ public class DemomakerGame extends Canvas implements Runnable {
 				Timer += 1000;
 				FPSstring = ("Size:" + (winWIDTH - 16) + ", " + (winHEIGHT - 39) + " | " + frames
 						+ " FPS | " + updates + " ups");
+				GameWindow.setFPS(frames);
 				updates = 0;
 				frames = 0;
 			}
@@ -224,6 +225,13 @@ public class DemomakerGame extends Canvas implements Runnable {
 		frame.setAlwaysOnTop(false);
 		frame.setResizable(true);
 	}
+
+	private GameWindow.GameWindowListener gameWindowListener = new GameWindow.GameWindowListener() {
+		@Override
+		public void onClose() {
+			frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+		}
+	};
 
 	public static void main(String[] args) {
 		DemomakerGame game = new DemomakerGame();

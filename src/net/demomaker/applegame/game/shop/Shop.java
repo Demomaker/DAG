@@ -20,7 +20,8 @@ public class Shop extends Entity {
   private static final int NUMBER_OF_BUTTON_ROWS = 3;
   private static final float DEFAULT_BUTTON_WIDTH = 200f;
   private static final float DEFAULT_BUTTON_HEIGHT = 50f;
-  private int Money = 2000;
+  private static final int INITIAL_MONEY_AMOUNT = 100;
+  private int money = INITIAL_MONEY_AMOUNT;
   private boolean shopIsGoingUp = true;
   private boolean isActive = true;
   private int SHOP_BUTTON_Y_UPPER_LIMIT = 247;
@@ -81,6 +82,7 @@ public class Shop extends Entity {
         buttonInitialPositions[i][j] = new Vector3<>(10f + i * (10f + DEFAULT_BUTTON_WIDTH), 40f + j * (10 + DEFAULT_BUTTON_HEIGHT), 0f);
       }
     }
+    money = INITIAL_MONEY_AMOUNT;
     allyBuyButton = new Button();
     appleBuyButton = new Button();
     moneyIncreaseButton = new Button();
@@ -155,7 +157,7 @@ public class Shop extends Entity {
     moneyIncrementImage.draw();
     allyBuyImage.draw();
     resetRedButton.draw();
-    GraphicsManager.drawString(Color.YELLOW,"Money: " + Money, new Vector3<Float>(shopButton.getPosition().getX() + 25f, shopButton.getPosition().getY(), shopButton.getPosition().getZ()));
+    GraphicsManager.drawString(Color.YELLOW,"Money: " + money, new Vector3<Float>(shopButton.getPosition().getX() + 25f, shopButton.getPosition().getY(), shopButton.getPosition().getZ()));
   }
 
   @Override
@@ -185,7 +187,7 @@ public class Shop extends Entity {
   }
 
   public void addMoney(int amount) {
-    Money += amount;
+    money += amount;
   }
 
   private void activateShop() {
@@ -209,9 +211,12 @@ public class Shop extends Entity {
   }
 
   private void buy(int price, ShopAct item) {
-    if (Money >= price) {
-      Money -= price;
+    money -= price;
+    if (money >= 0 && GameWindow.getFPS() >= 60) {
       ShopActQueue.add(item);
+    }
+    else {
+      money += price;
     }
   }
 
