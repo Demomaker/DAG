@@ -226,14 +226,7 @@ public class DemomakerGame extends Canvas implements Runnable {
 		frame.setResizable(true);
 	}
 
-	private GameWindow.GameWindowListener gameWindowListener = new GameWindow.GameWindowListener() {
-		@Override
-		public void onClose() {
-			frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
-		}
-	};
-
-	public static void main(String[] args) {
+	public static void main(String args[]) {
 		DemomakerGame game = new DemomakerGame();
 		ResourceFinder.setRoot(game);
 		game.frame.setResizable(true);
@@ -257,6 +250,18 @@ public class DemomakerGame extends Canvas implements Runnable {
 			}
 		});
 		game.start();
+		GameWindow.start();
 	}
 
+	private GameWindow.GameWindowListener gameWindowListener = new GameWindow.GameWindowListener() {
+		@Override
+		public void onClose() {
+			frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+		}
+
+		@Override
+		public void onStart() {
+		}
+
+	};
 }

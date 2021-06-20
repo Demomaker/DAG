@@ -45,9 +45,16 @@ public class GameWindow {
     }
   }
 
+  public static void start() {
+    for (GameWindowListener windowListener : windowListenerList) {
+      windowListener.onStart();
+    }
+  }
+
   public static abstract class GameWindowListener {
     public GameWindowListener() { addWindowListener(this); }
     public abstract void onClose();
+    public abstract void onStart();
   }
 
   public static void addWindowListener(GameWindowListener windowListener) {
