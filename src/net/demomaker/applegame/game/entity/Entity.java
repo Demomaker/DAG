@@ -21,8 +21,8 @@ public class Entity {
     }
     public void setSize(float width, float height) {
         this.entityBody.getTransform().setSize(new Vector3<>(width, height, 0f));
-        this.entityBody.getBox().setOuterBorderX(Float.floatToIntBits(width));
-        this.entityBody.getBox().setOuterBorderY(Float.floatToIntBits(height));
+        this.entityBody.getBox().setOuterBorderX((int) width);
+        this.entityBody.getBox().setOuterBorderY((int) height);
     }
     public float getWidth() {
         return this.entityBody.getTransform().getSize().getX();
@@ -36,7 +36,7 @@ public class Entity {
     public Vector3<Float> getTopLeftCorner() { return entityBody.getBox().getTopLeftCorner(); }
     public Vector3<Float> getBottomRightCorner() { return entityBody.getBox().getBottomRightCorner(); }
 
-    public void draw(Graphics g) {
+    public void draw() {
 
     }
 

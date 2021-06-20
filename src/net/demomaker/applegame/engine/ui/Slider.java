@@ -1,6 +1,8 @@
 package net.demomaker.applegame.engine.ui;
 
+import net.demomaker.applegame.engine.graphics.GraphicsManager;
 import net.demomaker.applegame.engine.input.Mouseboard;
+import net.demomaker.applegame.engine.util.AdvancedImage;
 import net.demomaker.applegame.engine.util.Vector3;
 import net.demomaker.applegame.engine.ui.button.MovingButton;
 
@@ -8,11 +10,11 @@ import java.awt.*;
 
 public class Slider extends UIElement {
     private int sliderValue = 50;
-    private final MovingButton movingButton = new MovingButton(null);
+    private final MovingButton movingButton = new MovingButton();
     private int minValue = 0;
     private int maxValue = 0;
-    private Image sliderBackgroundImage = null;
-    private Image sliderForegroundImage = null;
+    private AdvancedImage sliderBackgroundImage = null;
+    private AdvancedImage sliderForegroundImage = null;
 
     public void setMinValue(int minValue) {
         this.minValue = minValue;
@@ -90,16 +92,16 @@ public class Slider extends UIElement {
         return movingButton.getSize();
     }
 
-    public void setSliderImage(Image image) {
+    public void setSliderImage(AdvancedImage image) {
         movingButton.setImage(image);
     }
 
-    public void setSliderBackgroundImage(Image image) {
+    public void setSliderBackgroundImage(AdvancedImage image) {
         sliderBackgroundImage = image;
     }
 
-    public boolean sliderPressed() {
-        return Mouseboard.mousePressedUIElement(movingButton);
+    public MovingButton getMovingButton() {
+        return movingButton;
     }
 
     public void setSliderPosition(Vector3<Float> position) {
@@ -110,18 +112,20 @@ public class Slider extends UIElement {
         movingButton.setSize(size);
     }
 
-    public void setSliderForegroundImage(Image image) {
+    public void setSliderForegroundImage(AdvancedImage image) {
         sliderForegroundImage = image;
     }
 
     @Override
-    public void draw(Graphics g) {
-        g.drawImage(sliderBackgroundImage, getPosition().getX().intValue(), getPosition().getY().intValue(), null);
-        g.drawImage(sliderForegroundImage, movingButton.getPosition().getX().intValue(), movingButton.getPosition().getY().intValue(), null);
-        movingButton.draw(g);
+    public void draw() {
+        super.draw();
+        GraphicsManager.drawImage(sliderBackgroundImage, new Vector3<Float>(getPosition().getX(), getPosition().getY(), getPosition().getZ()));
+        GraphicsManager.drawImage(sliderForegroundImage, new Vector3<Float>(movingButton.getPosition().getX(), movingButton.getPosition().getY(), 0f));
+        movingButton.draw();
     }
 
     @Override
     public void update() {
+        super.update();
     }
 }

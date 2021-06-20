@@ -1,5 +1,6 @@
 package net.demomaker.applegame.game.entity;
 
+import net.demomaker.applegame.engine.graphics.GraphicsManager;
 import net.demomaker.applegame.engine.util.Vector3;
 
 import java.awt.*;
@@ -17,9 +18,8 @@ public class Apple extends Entity {
     }
 
     @Override
-    public void draw(Graphics g) {
-        super.draw(g);
-        g.setColor(getColor());
-        g.fillRect(Math.round(getPosition().getX()), Math.round(getPosition().getY()), Math.round(getWidth()), Math.round(getHeight()));
+    public void draw() {
+        super.draw();
+        GraphicsManager.fillRectangle(getColor(), Math.round(getWidth()), Math.round(getHeight()), new Vector3<Float>(getPosition().getX(), getPosition().getY(), getPosition().getZ()));
     }
 }

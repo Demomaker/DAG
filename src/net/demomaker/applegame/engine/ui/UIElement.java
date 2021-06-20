@@ -8,7 +8,7 @@ import java.awt.*;
 public class UIElement {
     protected Transform transform = new Transform();
 
-    public void draw(Graphics g){
+    public void draw(){
     }
 
     public void update() {
@@ -23,6 +23,14 @@ public class UIElement {
 
     public void setPosition(Vector3<Float> position) {
         transform.setPosition(position);
+    }
+
+    public void setPositionRelativeToParentTransform(Vector3<Float> position) {
+        transform.setPositionRelativeToParent(position);
+    }
+
+    public Vector3<Float> getPositionRelativeToParentTransform() {
+        return transform.getPositionRelativeToParent();
     }
 
     public Vector3<Float> getPosition() {

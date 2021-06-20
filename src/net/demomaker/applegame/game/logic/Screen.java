@@ -1,5 +1,6 @@
 package net.demomaker.applegame.game.logic;
 
+import net.demomaker.applegame.engine.graphics.GameWindow;
 import net.demomaker.applegame.engine.object.Box;
 import net.demomaker.applegame.game.entity.Entity;
 import net.demomaker.applegame.engine.object.Transform;
@@ -9,8 +10,14 @@ public class Screen {
 
 	private Transform transform = new Transform();
 	private Box screenBox = new Box();
+	private static Screen instance = null;
+	public static Screen getInstance() {
+		if(instance == null)
+			instance = new Screen(GameWindow.getWidth(), GameWindow.getHeight() - 39);
+		return instance;
+	}
 
-	public Screen(int width, int height) {
+	private Screen(int width, int height) {
 		setSize(width, height);
 	}
 

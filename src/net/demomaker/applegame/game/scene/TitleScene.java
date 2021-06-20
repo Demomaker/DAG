@@ -1,8 +1,9 @@
 package net.demomaker.applegame.game.scene;
 
+import net.demomaker.applegame.engine.graphics.GameWindow;
+import net.demomaker.applegame.engine.graphics.GraphicsManager;
 import net.demomaker.applegame.game.controller.DemomakerGame;
 import net.demomaker.applegame.engine.input.Keyboard;
-import net.demomaker.applegame.engine.input.Mouseboard;
 import net.demomaker.applegame.engine.scene.Scene;
 import net.demomaker.applegame.engine.scene.SceneManager;
 import net.demomaker.applegame.engine.util.Vector3;
@@ -10,10 +11,11 @@ import net.demomaker.applegame.game.entity.Ally;
 import net.demomaker.applegame.game.entity.Apple;
 import net.demomaker.applegame.engine.ui.button.Button;
 import net.demomaker.applegame.game.sound.Sound;
+import net.demomaker.applegame.engine.util.AdvancedImage;
+import net.demomaker.applegame.engine.util.AssetRetreiver;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.net.URL;
 import java.util.Random;
 
 import static net.demomaker.applegame.game.consts.SharedObjectKeys.*;
@@ -25,26 +27,13 @@ public class TitleScene implements Scene {
     public boolean showFPS = false;
     public String FPSstring;
     private boolean playSounds = false;
-    private Button optionButton = new Button(null);
+    private Button optionButton = new Button();
     private Keyboard.KeyboardListener keyboardListener = new KeyboardListener();
-    private Keyboard key;
-    private final Toolkit defaultToolkit = Toolkit.getDefaultToolkit();
-
-    // Title Screen URLs
-    URL titlescreen = resource("/resources/titlescreen.png");
-    URL options = resource("/resources/Options.png");
 
     // Title Screen Images
-    private final Image TitleScreen = image(titlescreen);
-    private final Image Options = image(options);
-
-    public URL resource(String name) {
-        return DemomakerGame.class.getResource(name);
-    }
-
-    public Image image(URL url) {
-        return defaultToolkit.getImage(url);
-    }
+    private final AdvancedImage TitleScreen = AssetRetreiver.getImageFromPath("/resources/titlescreen.png");
+    private final AdvancedImage Options = AssetRetreiver.getImageFromPath("/resources/Options.png");
+    private boolean finishedLoading = false;
 
     private Apple goodEntityTouchApple() {
         if (playSounds) {
@@ -70,27 +59,37 @@ public class TitleScene implements Scene {
     }
 
     private void initGameButtons() {
-        optionButton.setPosition(new Vector3<>(winWIDTH / 2f - 64f, winHEIGHT / 2f - 36f, 0f));
+        optionButton.setActive(true);
+        optionButton.setPosition(new Vector3<>(GameWindow.getWidth() / 2f - 64f, GameWindow.getHeight() / 2f - 36f, 0f));
         optionButton.setSize(new Vector3<>(128f, 72f, 0f));
         optionButton.setButtonNormalStateImage(Options);
         optionButton.setButtonPressedStateImage(Options);
         optionButton.setButtonReleasedStateImage(Options);
-        optionButton.press();
+    }
+
+    @Override
+    public boolean finishedLoading() {
+        return finishedLoading;
+    }
+
+    @Override
+    public void onWindowResize() {
+
     }
 
     @Override
     public void init() {
-        key = (Keyboard) SceneManager.getSharedObject(KeyboardKey);
         playSounds = (Boolean) SceneManager.getSharedObject(PlaySoundKey);
         titleApple = generateNewApple();
         titleAlly = generateNewAlly();
         titleAlly.SetTarget(titleApple);
         initGameButtons();
+        finishedLoading = true;
     }
 
     @Override
     public void update(float deltaTime) {
-        if(Mouseboard.mouseUpUIElement(optionButton)) {
+        if(optionButton.isClicked()) {
             SceneManager.setSharedObject(OptionReturnSceneKey, "TitleScene");
             SceneManager.setActiveScene(SceneManager.getSceneByName("OptionScene"));
         }
@@ -102,25 +101,24 @@ public class TitleScene implements Scene {
     }
 
     @Override
-    public void draw(Graphics g) {
-        g.drawImage(TitleScreen, 0, 0, winWIDTH, winHEIGHT, null);
-        optionButton.draw(g);
-        titleAlly.draw(g);
-        titleApple.draw(g);
+    public void draw() {
+        GraphicsManager.drawImage(TitleScreen, new Vector3<>(0f,0f,0f));
+        optionButton.draw();
+        titleAlly.draw();
+        titleApple.draw();
         if (showFPS) {
-            g.setColor(Color.WHITE);
-            g.drawString(FPSstring, 0, 10);
+            GraphicsManager.drawString(Color.WHITE, FPSstring, new Vector3<Float>(0f, 10f, 0f));
         }
     }
 
     @Override
     public void cleanup() {
-
+        optionButton.setActive(false);
     }
 
     @Override
     public void onResume() {
-
+        optionButton.setActive(true);
     }
 
     private class KeyboardListener extends Keyboard.KeyboardListener {

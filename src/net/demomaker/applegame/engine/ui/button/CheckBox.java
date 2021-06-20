@@ -1,62 +1,67 @@
 package net.demomaker.applegame.engine.ui.button;
 
+import net.demomaker.applegame.engine.util.AdvancedImage;
+import net.demomaker.applegame.engine.util.ImageObserver;
+import net.demomaker.applegame.engine.util.Vector3;
 import net.demomaker.applegame.game.controller.DemomakerGame;
 
 import java.awt.*;
 
 public class CheckBox extends Button {
-    private boolean checked = false;
-    private Image checkedImage = null;
-    private Image uncheckedImage = null;
+    private boolean isChecked = false;
+    private AdvancedImage checkedImage = null;
+    private AdvancedImage uncheckedImage = null;
     private boolean initialStateDone = false;
-    public CheckBox() {
-        super();
-    }
-    public CheckBox(DemomakerGame demomakerGame) {
-        super(demomakerGame);
-    }
-    public void Check() {
-        checked = true;
+
+    public void check() {
+        isChecked = true;
         imageToShow = checkedImage;
     }
-    public void Uncheck() {
-        checked = false;
+    public void uncheck() {
+        isChecked = false;
         imageToShow = uncheckedImage;
     }
     public boolean isChecked() {
-        return checked;
+        return isChecked;
     }
+    public void setChecked(boolean checked) { if(checked) check(); else uncheck();}
 
     @Override
-    public void normal() {
+    protected void normal() {
+        super.normal();
         //Do nothing
     }
 
     @Override
-    public void press() {
-        if(checked) Uncheck();
-        else Check();
+    protected void click() {
+        super.click();
+        if(isChecked) uncheck();
+        else check();
     }
 
     @Override
-    public void release() {
+    protected void release() {
+        super.release();
         //Do nothing
     }
 
     @Override
     public void update() {
+        super.update();
         //Do nothing
     }
 
-    public void setCheckedImage(Image checkedImage) {
+    public void setCheckedImage(AdvancedImage checkedImage) {
         this.checkedImage = checkedImage;
+        this.setSize(new Vector3<>( (float) checkedImage.getWidth(ImageObserver.getImageObserver()), (float) checkedImage.getHeight(ImageObserver.getImageObserver()),0f));
     }
 
-    public void setUncheckedImage(Image uncheckedImage) {
+    public void setUncheckedImage(AdvancedImage uncheckedImage) {
         this.uncheckedImage = uncheckedImage;
+        this.setSize(new Vector3<>( (float) uncheckedImage.getWidth(ImageObserver.getImageObserver()), (float) uncheckedImage.getHeight(ImageObserver.getImageObserver()),0f));
         if(!initialStateDone) {
             initialStateDone = true;
-            Uncheck();
+            uncheck();
         }
     }
 }

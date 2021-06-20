@@ -2,23 +2,28 @@ package net.demomaker.applegame.game.controller; //package
 
 /*Imports*/
 
+import net.demomaker.applegame.engine.graphics.GameWindow;
+import net.demomaker.applegame.engine.graphics.GraphicsManager;
 import net.demomaker.applegame.engine.input.Keyboard;
 import net.demomaker.applegame.engine.input.Mouseboard;
 import net.demomaker.applegame.engine.scene.SceneManager;
+import net.demomaker.applegame.engine.util.AdvancedImage;
+import net.demomaker.applegame.engine.util.ResourceFinder;
+import net.demomaker.applegame.engine.util.Vector3;
+import net.demomaker.applegame.game.graphics.JavaGraphics;
 import net.demomaker.applegame.game.logic.Screen;
 import net.demomaker.applegame.game.logic.*;
 import net.demomaker.applegame.game.scene.EndScene;
 import net.demomaker.applegame.game.scene.GameScene;
 import net.demomaker.applegame.game.scene.OptionScene;
 import net.demomaker.applegame.game.scene.TitleScene;
+import net.demomaker.applegame.engine.util.ImageObserver;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
 
 import static net.demomaker.applegame.game.consts.SharedObjectKeys.*;
 
@@ -37,7 +42,6 @@ public class DemomakerGame extends Canvas implements Runnable {
 	private final Keyboard.KeyboardListener keyboardListener = new KeyboardListener();
 	private Thread thread;
 	private boolean running = false;
-	private final Screen screen;
 	public JFrame frame;
 	private final Keyboard key;
 	public String FPSstring;
@@ -65,7 +69,6 @@ public class DemomakerGame extends Canvas implements Runnable {
 	public DemomakerGame() {
 		Dimension size = new Dimension(winWIDTH * SCALE, winHEIGHT * SCALE);
 		setPreferredSize(size);
-		screen = new Screen(winWIDTH, winHEIGHT);
 		frame = new JFrame();
 		key = new Keyboard();
 		frame.addComponentListener(new ComponentListener() {
@@ -73,7 +76,6 @@ public class DemomakerGame extends Canvas implements Runnable {
 			public void componentResized(ComponentEvent e) {
 				winWIDTH = frame.getWidth();
 				winHEIGHT = frame.getHeight();
-				screen.setSize(winWIDTH, winHEIGHT);
 			}
 
 			@Override
@@ -122,7 +124,6 @@ public class DemomakerGame extends Canvas implements Runnable {
 	private void init() {
 		SceneManager.init();
 		SceneManager.setSharedObject(KeyboardKey, key);
-		SceneManager.setSharedObject(ScreenKey, screen);
 		SceneManager.setSharedObject(FrameKey, frame);
 		SceneManager.setSharedObject(PlaySoundKey, false);
 		SceneManager.setSharedObject(PlayMusicKey, false);
@@ -177,6 +178,7 @@ public class DemomakerGame extends Canvas implements Runnable {
 	}
 
 	public void update(float deltaTime) {
+		if(!SceneManager.getActiveScene().finishedLoading()) return;
 		if (Keyboard.keyPressed(KeyEvent.VK_F4)) {
 			FullScreen();
 			FullScreen = !FullScreen;
@@ -190,20 +192,25 @@ public class DemomakerGame extends Canvas implements Runnable {
 
 	// Rendering Things
 	public void render() {
-
+		if(!SceneManager.getActiveScene().finishedLoading()) return;
 		BufferStrategy bs = getBufferStrategy();
 		if (bs == null) {
 			createBufferStrategy(3);
 			return;
 
 		}
+		JavaGraphics javaGraphics = new JavaGraphics();
 		Graphics g = bs.getDrawGraphics();
-		SceneManager.getActiveScene().draw(g);
+		javaGraphics.setGraphics(g);
+		GraphicsManager.init(javaGraphics);
+		AdvancedImage image = AdvancedImage.createImageFromWidthAndHeight(GameWindow.getWidth(), GameWindow.getHeight());
+		GraphicsManager.drawImage(image, new Vector3<Float>(0f, 0f, 0f));
+		SceneManager.getActiveScene().draw();
 		if (showFPS) {
 			g.setColor(Color.WHITE);
 			g.drawString(FPSstring, 0, 10);
 		}
-		g.dispose();
+		GraphicsManager.cleanup();
 		bs.show();
 	}
 
@@ -220,6 +227,7 @@ public class DemomakerGame extends Canvas implements Runnable {
 
 	public static void main(String[] args) {
 		DemomakerGame game = new DemomakerGame();
+		ResourceFinder.setRoot(game);
 		game.frame.setResizable(true);
 		game.frame.setTitle(DemomakerGame.titlename);
 		game.frame.add(game);
@@ -228,8 +236,18 @@ public class DemomakerGame extends Canvas implements Runnable {
 		game.frame.setSize(WIDTH, HEIGHT);
 		game.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		game.frame.setLocationRelativeTo(null);
-		winWIDTH = game.frame.getWidth();
-		winHEIGHT = game.frame.getHeight();
+		GameWindow.setWidth(game.frame.getWidth());
+		GameWindow.setHeight(game.frame.getHeight());
+		ImageObserver.setImageObserver(game);
+		game.frame.addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentResized(ComponentEvent e) {
+				super.componentResized(e);
+				GameWindow.setWidth(game.frame.getWidth());
+				GameWindow.setHeight(game.frame.getHeight());
+				Screen.getInstance().setSize(GameWindow.getWidth(), GameWindow.getHeight() - 39);
+			}
+		});
 		game.start();
 	}
 

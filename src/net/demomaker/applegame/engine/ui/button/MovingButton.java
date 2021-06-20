@@ -1,33 +1,37 @@
 package net.demomaker.applegame.engine.ui.button;
 
-import net.demomaker.applegame.game.controller.DemomakerGame;
-
-import java.awt.*;
+import net.demomaker.applegame.engine.util.AdvancedImage;
+import net.demomaker.applegame.engine.util.ImageObserver;
+import net.demomaker.applegame.engine.util.Vector3;
 
 public class MovingButton extends Button {
-    public MovingButton() {
-        super();
-    }
-    public MovingButton(DemomakerGame demomakerGame) {
-        super(demomakerGame);
-    }
 
-    public void setImage(Image image) {
+    public void setImage(AdvancedImage image) {
         imageToShow = image;
+        this.setSize(new Vector3<>( (float) image.getWidth(ImageObserver.getImageObserver()), (float) image.getHeight(ImageObserver.getImageObserver()),0f));
     }
 
     @Override
-    public void press() {
+    protected void click() {
+        super.click();
         //Do nothing
     }
 
     @Override
-    public void normal() {
+    protected void normal() {
+        super.normal();
         //Do nothing
     }
 
     @Override
-    public void release() {
+    protected void release() {
+        super.release();
+        //Do nothing
+    }
+
+    @Override
+    protected void press() {
+        super.press();
         //Do nothing
     }
 }

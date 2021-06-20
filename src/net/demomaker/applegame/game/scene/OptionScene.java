@@ -1,31 +1,38 @@
 package net.demomaker.applegame.game.scene;
 
+import net.demomaker.applegame.engine.graphics.GraphicsManager;
 import net.demomaker.applegame.engine.scene.Scene;
 import net.demomaker.applegame.engine.scene.SceneManager;
 import net.demomaker.applegame.engine.ui.Slider;
+import net.demomaker.applegame.engine.ui.button.Button;
+import net.demomaker.applegame.engine.ui.button.ButtonListener;
 import net.demomaker.applegame.engine.ui.button.CheckBox;
+import net.demomaker.applegame.engine.util.AdvancedImage;
 import net.demomaker.applegame.engine.util.Vector3;
-import net.demomaker.applegame.game.controller.DemomakerGame;
 import net.demomaker.applegame.engine.input.Keyboard;
 import net.demomaker.applegame.engine.input.Mouseboard;
-import net.demomaker.applegame.game.logic.Screen;
 import net.demomaker.applegame.game.logic.*;
+import net.demomaker.applegame.engine.util.AssetRetreiver;
 
-import javax.swing.*;
-import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.net.URL;
+import java.awt.event.MouseEvent;
 
 import static net.demomaker.applegame.game.consts.SharedObjectKeys.*;
 
 public class OptionScene implements Scene {
     private Difficulty difficulty = Difficulty.Easy;
-    private boolean playSounds = false;
-    private boolean playMusic = false;
-    private Slider difficultySlider = new Slider();
+    private final Slider difficultySlider = new Slider();
     private String returnSceneName = "GameScene";
-    private KeyboardListener keyboardListener = new KeyboardListener();
-    private OptionScene referredThis = this;
+    private final KeyboardListener keyboardListener = new KeyboardListener();
+    private final OptionScene referredThis = this;
+    private CheckBox musicButton;
+    private CheckBox soundButton;
+    private boolean finishedLoading = false;
+    private int lastMouseX = 0;
+    private int lastMouseY = 0;
+    private boolean movingButtonPressed = false;
+    private boolean movingButtonHovered = false;
+
     private class KeyboardListener extends Keyboard.KeyboardListener {
         @Override
         public void onKeyPressed(int key) {
@@ -50,51 +57,20 @@ public class OptionScene implements Scene {
         }
     }
 
-    /* Buttons */
-    private CheckBox musicButton;
-    private CheckBox soundButton;
+    private final AdvancedImage OptionMenu = AssetRetreiver.getImageFromPath("/resources/OptionMenu.png");
+    private final AdvancedImage Meter = AssetRetreiver.getImageFromPath("/resources/Meter.png");
+    private final AdvancedImage Sounds = AssetRetreiver.getImageFromPath("/resources/Sound.png");
+    private final AdvancedImage Cross = AssetRetreiver.getImageFromPath("/resources/Cross.png");
+    private final AdvancedImage Music = AssetRetreiver.getImageFromPath("/resources/Music.png");
+    private final AdvancedImage DifficultyImage = AssetRetreiver.getImageFromPath("/resources/Difficulty.png");
+    private final AdvancedImage Hard = AssetRetreiver.getImageFromPath("/resources/Hard.png");
+    private final AdvancedImage Normal = AssetRetreiver.getImageFromPath("/resources/Normal.png");
+    private final AdvancedImage Easy = AssetRetreiver.getImageFromPath("/resources/Easy.png");
 
-    // variables
-    private Screen screen;
-    public JFrame frame;
-    private Keyboard key;
-    private final Toolkit defaultToolkit = Toolkit.getDefaultToolkit();
-    // Audio
-    URL optionmenu = resource("/resources/OptionMenu.png");
-    URL meter = resource("/resources/Meter.png");
-    URL sound = resource("/resources/Sound.png");
-    URL cross = resource("/resources/Cross.png");
-    URL music = resource("/resources/Music.png");
-
-    URL ifficulty = resource("/resources/Difficulty.png");
-    URL hard = resource("/resources/Hard.png");
-    URL normal = resource("/resources/Normal.png");
-    URL easy = resource("/resources/Easy.png");
-
-    /* Number URLs */
-    private final Image OptionMenu = image(optionmenu);
-    private final Image Meter = image(meter);
-    private final Image Sounds = image(sound);
-    private final Image Cross = image(cross);
-    private final Image Music = image(music);
-
-
-    private final Image DifficultyImage = image(ifficulty);
-    private final Image Hard = image(hard);
-    private final Image Normal = image(normal);
-    private final Image Easy = image(easy);
-
-    public URL resource(String name) {
-        return DemomakerGame.class.getResource(name);
-    }
-
-    public Image image(URL url) {
-        return defaultToolkit.getImage(url);
-    }
 
     private void initGameButtons() {
-        musicButton = new CheckBox(null);
-        soundButton = new CheckBox(null);
+        musicButton = new CheckBox();
+        soundButton = new CheckBox();
         soundButton.setUncheckedImage(Cross);
         soundButton.setCheckedImage(Sounds);
         soundButton.setPosition(new Vector3<>(100f, 150f,0f));
@@ -114,6 +90,10 @@ public class OptionScene implements Scene {
         difficultySlider.setSliderPosition(new Vector3<>(100f, 50f, 0f));
         setDifficultySliderValue(Difficulty.Easy);
         setDifficultySliderValue(difficulty);
+        soundButton.setActive(true);
+        musicButton.setActive(true);
+        soundButton.setChecked((Boolean) SceneManager.getSharedObject(PlaySoundKey));
+        musicButton.setChecked((Boolean) SceneManager.getSharedObject(PlayMusicKey));
     }
 
     private void setDifficultySliderValue(Difficulty difficulty) {
@@ -121,37 +101,35 @@ public class OptionScene implements Scene {
     }
 
     @Override
+    public boolean finishedLoading() {
+        return finishedLoading;
+    }
+
+    @Override
+    public void onWindowResize() {
+
+    }
+
+    @Override
     public void init() {
-        key = (Keyboard) SceneManager.getSharedObject(KeyboardKey);
-        screen = (Screen) SceneManager.getSharedObject(ScreenKey);
-        playSounds = (Boolean) SceneManager.getSharedObject(PlaySoundKey);
-        playMusic = (Boolean) SceneManager.getSharedObject(PlayMusicKey);
         difficulty =  Difficulty.values()[((Integer) SceneManager.getSharedObject(DifficultyKey))];
         returnSceneName = (String) SceneManager.getSharedObject(OptionReturnSceneKey);
         initGameButtons();
-        if(playSounds)
-            soundButton.Check();
-        else
-            soundButton.Uncheck();
-        if(playMusic)
-            musicButton.Check();
-        else
-            musicButton.Uncheck();
+        finishedLoading = true;
     }
 
     @Override
     public void update(float deltaTime) {
-        if (difficultySlider.sliderPressed()) {
-            if(difficultySlider.isOnLeftSideOfSlider(Mouseboard.getX())) {
+        if (canSlide()) {
+            if(difficultySlider.isOnLeftSideOfSlider(lastMouseX)) {
                 int differenceInX = 10;
                 difficultySlider.SlideToTheLeft(differenceInX);
             }
-            if(difficultySlider.isOnRightSideOfSlider(Mouseboard.getX())) {
+            if(difficultySlider.isOnRightSideOfSlider(lastMouseX)) {
                 int differenceInX = 10;
                 difficultySlider.SlideToTheRight(differenceInX);
             }
         }
-
         int sliderValue = difficultySlider.getSliderValue();
         if (sliderValue >= 0 && sliderValue <= 33) {
             difficulty = Difficulty.Easy;
@@ -165,22 +143,18 @@ public class OptionScene implements Scene {
             difficulty = Difficulty.Hard;
             difficultySlider.setSliderImage(Hard);
         }
+    }
 
-        if (Mouseboard.mousePressedUIElement(soundButton)) {
-            soundButton.press();
-        }
-
-        if (Mouseboard.mousePressedUIElement(musicButton)) {
-            musicButton.press();
-        }
+    private boolean canSlide() {
+        return movingButtonPressed && movingButtonHovered;
     }
 
     @Override
-    public void draw(Graphics g) {
-        g.drawImage(OptionMenu, 0, 0, winWIDTH, winHEIGHT, null);
-        soundButton.draw(g);
-        musicButton.draw(g);
-        difficultySlider.draw(g);
+    public void draw() {
+        GraphicsManager.drawImage(OptionMenu, new Vector3<Float>(0f, 0f, 0f));
+        soundButton.draw();
+        musicButton.draw();
+        difficultySlider.draw();
     }
 
     @Override
@@ -188,10 +162,64 @@ public class OptionScene implements Scene {
         SceneManager.setSharedObject(PlaySoundKey, soundButton.isChecked());
         SceneManager.setSharedObject(PlayMusicKey, musicButton.isChecked());
         SceneManager.setSharedObject(DifficultyKey, difficulty.ordinal());
+        soundButton.setActive(false);
+        musicButton.setActive(false);
     }
 
     @Override
     public void onResume() {
-
+        finishedLoading = true;
     }
+
+    private Mouseboard.MouseboardListener mouseboardListener = new Mouseboard.MouseboardListener() {
+        @Override
+        public void onMouseMoved(MouseEvent mouse) {
+            lastMouseX = mouse.getX();
+            lastMouseY = mouse.getY();
+        }
+
+        @Override
+        public void onMouseClicked(MouseEvent mouse) {
+
+        }
+
+        @Override
+        public void onMousePressed(MouseEvent mouse) {
+            movingButtonPressed = true;
+        }
+
+        @Override
+        public void onMouseReleased(MouseEvent mouse) {
+            movingButtonPressed = false;
+        }
+    };
+
+    private ButtonListener buttonListener = new ButtonListener() {
+        @Override
+        public void onClick(Button button) {
+            if(button == musicButton) {
+                musicButton.isChecked();
+            }
+
+            if(button == soundButton) {
+                soundButton.isChecked();
+            }
+        }
+
+        @Override
+        public void onPress(Button button) {
+        }
+
+        @Override
+        public void onRelease(Button button) {
+            if(button == difficultySlider.getMovingButton())
+                movingButtonHovered = false;
+        }
+
+        @Override
+        public void onHover(Button button) {
+            if(button == difficultySlider.getMovingButton())
+                movingButtonHovered = true;
+        }
+    };
 }

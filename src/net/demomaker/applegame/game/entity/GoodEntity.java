@@ -1,5 +1,6 @@
 package net.demomaker.applegame.game.entity;
 
+import net.demomaker.applegame.engine.graphics.GraphicsManager;
 import net.demomaker.applegame.engine.util.Vector3;
 
 import java.awt.*;
@@ -17,9 +18,14 @@ public class GoodEntity extends Entity{
     }
 
     @Override
-    public void draw(Graphics g) {
-        super.draw(g);
-        g.setColor(getColor());
-        g.fillRect(Math.round(getPosition().getX()), Math.round(getPosition().getY()), Math.round(getWidth()), Math.round(getHeight()));
+    public void draw() {
+        super.draw();
+        GraphicsManager.fillRectangle(getColor(), Math.round(getWidth()), Math.round(getHeight()), new Vector3<Float>(getPosition().getX(), getPosition().getY(), getPosition().getZ()));
+    }
+
+    public boolean ateApple(Apple apple) {
+        Vector3<Integer> targetPositionInInt = new Vector3<>(apple.getPosition().getX().intValue(), apple.getPosition().getY().intValue(), apple.getPosition().getZ().intValue());
+        Vector3<Integer> thisPositionInInt = new Vector3<>(getPosition().getX().intValue(), getPosition().getY().intValue(), getPosition().getZ().intValue());
+        return targetPositionInInt.equals(thisPositionInInt);
     }
 }

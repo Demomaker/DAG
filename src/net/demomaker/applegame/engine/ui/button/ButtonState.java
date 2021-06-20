@@ -2,6 +2,10 @@ package net.demomaker.applegame.engine.ui.button;
 
 public enum ButtonState {
     NORMAL,
+    CLICKED,
     PRESSED,
-    RELEASED
+    RELEASED,
+    HOVERED,
+    CREATEDANDRELEASED,
+    TOBERELEASED
 }

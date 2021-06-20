@@ -5,6 +5,8 @@ import net.demomaker.applegame.engine.util.Vector3;
 import java.util.ArrayList;
 import java.util.List;
 
+import static net.demomaker.applegame.engine.util.Vector3.sum;
+
 public class Transform {
     private List<Transform> children = new ArrayList<>();
     private Transform parent;
@@ -26,14 +28,27 @@ public class Transform {
         return position;
     }
 
+    public Vector3<Float> getPositionRelativeToParent() {
+        return Vector3.sub(this.getPosition(), parent.getPosition());
+    }
+
     public void setPosition(Vector3<Float> position) {
         Vector3<Float> oldPosition = this.position;
         this.position = position;
         if(!children.isEmpty()) {
             for (Transform child : children) {
                 Vector3<Float> childPreviousPosition = Vector3.sub(child.getPosition(), oldPosition);
-                child.setPosition(Vector3.sum(getPosition(), childPreviousPosition));
+                child.setPosition(sum(getPosition(), childPreviousPosition));
             }
+        }
+    }
+
+    public void setPositionRelativeToParent(Vector3<Float> position) {
+        if(parent != null) {
+            this.setPosition(sum(parent.getPosition(), position));
+        }
+        else {
+            this.setPosition(position);
         }
     }
 
