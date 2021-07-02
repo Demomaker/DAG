@@ -32,7 +32,6 @@ import static net.demomaker.applegame.game.consts.SharedObjectKeys.*;
 
 public class GameScene implements Scene {
     private Player player = null;
-    private final ArrayList<Apple> apples = new ArrayList<>();
     private final ArrayList<Ally> allies = new ArrayList<>();
     private final Random random = new Random();
     private Difficulty difficulty = Difficulty.Easy;
@@ -71,7 +70,7 @@ public class GameScene implements Scene {
         playMusic = (Boolean) SceneManager.getSharedObject(PlayMusicKey);
         difficulty =  Difficulty.values()[((Integer) SceneManager.getSharedObject(DifficultyKey))];
         player = new Player();
-        apples.clear();
+        Apple.clearList();
         allies.clear();
         if(playMusic)
             Sound.music.loop();
@@ -94,8 +93,8 @@ public class GameScene implements Scene {
 
         makeAlliesEatApples();
 
-        for (int i = 0; i < apples.size(); i++) {
-            Apple currentApple = apples.get(i);
+        for (int i = 0; i < Apple.getList().size(); i++) {
+            Apple currentApple = Apple.getList().get(i);
             if(!Screen.getInstance().entityIsWithin(currentApple)) {
                 regenerateAppleInList(currentApple);
             }
@@ -113,7 +112,7 @@ public class GameScene implements Scene {
 
     @Override
     public void draw() {
-        GraphicsManager.drawImage(backgroundGrid, new Vector3<Float>(0f, 0f,0f));
+        GraphicsManager.drawImage(backgroundGrid, new Vector3<>(0f, 0f,0f));
 
         if(!isGamePaused()) {
             drawGame();
@@ -128,7 +127,7 @@ public class GameScene implements Scene {
     public void cleanup() {
         gameState = GameState.PAUSE;
         allies.clear();
-        apples.clear();
+        Apple.getList().clear();
         if (SceneManager.getSharedObject(HighscoreKey) == null || currentScore > (int) SceneManager.getSharedObject(HighscoreKey)) {
             SceneManager.setSharedObject(HighscoreKey, currentScore);
         }
@@ -138,7 +137,7 @@ public class GameScene implements Scene {
 
     @Override
     public void onResume() {
-        Shop.getInstance().init();
+        Shop.getInstance().onResume();
         playSounds = (Boolean) SceneManager.getSharedObject(PlaySoundKey);
         playMusic = (Boolean) SceneManager.getSharedObject(PlayMusicKey);
         difficulty = Difficulty.values()[((Integer) SceneManager.getSharedObject(DifficultyKey))];
@@ -169,22 +168,22 @@ public class GameScene implements Scene {
     }
 
     private void regenerateAllApplesInList() {
-        for(int i = 0; i < apples.size(); i++) {
-            regenerateAppleInList(apples.get(i));
+        for(int i = 0; i < Apple.getList().size(); i++) {
+            regenerateAppleInList(Apple.getList().get(i));
         }
     }
 
     private void regenerateAppleInList(Apple currentApple){
-        apples.remove(currentApple);
+        Apple.removeFromList(currentApple);
         generateAppleInAppleList();
     }
 
     private void generateAppleInAppleList() {
-        apples.add(Apple.generateNewApple());
+        Apple.addToList(Apple.generateNewApple());
     }
 
     private void generateAllyInAllyList() {
-        allies.add(Ally.generateNewAlly(apples));
+        allies.add(Ally.generateNewAlly());
     }
 
     private void manageKeys() {
@@ -260,19 +259,19 @@ public class GameScene implements Scene {
 
         // When Player goes off the map, returns other side
         if (Screen.getInstance().entityXIsOnRightSideOfBounds(player)) {
-            player.setPosition(new Vector3<Float>(0f, player.getPosition().getY(), player.getPosition().getZ()));
+            player.setPosition(new Vector3<>(0f, player.getPosition().getY(), player.getPosition().getZ()));
         }
 
         else if (Screen.getInstance().entityXIsOnLeftSideOfBounds(player)) {
-            player.setPosition(new Vector3<Float>(Screen.getInstance().getWidth() - player.getWidth(), player.getPosition().getY(), player.getPosition().getZ()));
+            player.setPosition(new Vector3<>(Screen.getInstance().getWidth() - player.getWidth(), player.getPosition().getY(), player.getPosition().getZ()));
         }
 
         else if (Screen.getInstance().entityYIsOnBottomSideOfBounds(player)) {
-            player.setPosition(new Vector3<Float>(player.getPosition().getX(),0f, player.getPosition().getZ()));
+            player.setPosition(new Vector3<>(player.getPosition().getX(),0f, player.getPosition().getZ()));
         }
 
         else if (Screen.getInstance().entityYIsOnTopSideOfBounds(player)) {
-            player.setPosition(new Vector3<Float>(player.getPosition().getX(), Screen.getInstance().getHeight() - player.getHeight(), player.getPosition().getZ())); ;
+            player.setPosition(new Vector3<>(player.getPosition().getX(), Screen.getInstance().getHeight() - player.getHeight(), player.getPosition().getZ()));
         }
     }
 
@@ -280,7 +279,7 @@ public class GameScene implements Scene {
         gameState = GameState.PLAY;
         currentScore = 0;
         startingAmountOfTimer = 60000;
-        player.setPosition(new Vector3<Float>(0f,0f,0f));
+        player.setPosition(new Vector3<>(0f,0f,0f));
         if(playMusic)
             Sound.music.loop();
         generateAppleInAppleList();
@@ -291,17 +290,17 @@ public class GameScene implements Scene {
     }
 
     private void makeAlliesEatApples() {
-        for (int i = 0; i < apples.size(); i++) {
-            Apple currentApple = apples.get(i);
+        for (int i = 0; i < Apple.getList().size(); i++) {
+            Apple currentApple = Apple.getList().get(i);
             if (player.ateApple(currentApple)) {
-                apples.set(i, goodEntityTouchApple());
+                Apple.getList().set(i, goodEntityTouchApple());
                 currentApple.onAppleEaten();
             }
         }
 
         for (Ally ally : allies) {
             if (ally.ateTarget()) {
-                apples.set(apples.indexOf(ally.getTarget()), goodEntityTouchApple());
+                Apple.getList().set(Apple.getList().indexOf(ally.getTarget()), goodEntityTouchApple());
                 ally.getTarget().onAppleEaten();
             }
         }
@@ -347,37 +346,37 @@ public class GameScene implements Scene {
         drawTimer();
         drawScore();
         player.draw();
-        for (Apple apple : apples) {
+        for (Apple apple : Apple.getList()) {
             apple.draw();
         }
         for (Ally ally : allies) {
             ally.draw();
         }
-        GraphicsManager.drawImage(scoreLabel, new Vector3<Float>(GameWindow.getWidth() - 634f, 0f, 0f));
+        GraphicsManager.drawImage(scoreLabel, new Vector3<>(GameWindow.getWidth() - 634f, 0f, 0f));
     }
 
     private void drawScore() {
         AdvancedImage[] ScoreImages = GameFont.getSymbolsfromNumber(currentScore);
-        GraphicsManager.drawImage(ScoreImages[2], new Vector3<Float>(GameWindow.getWidth() - 628f, 56f, 0f));
-        GraphicsManager.drawImage(ScoreImages[1], new Vector3<Float>(GameWindow.getWidth() - 569f, 56f, 0f));
-        GraphicsManager.drawImage(ScoreImages[0], new Vector3<Float>(GameWindow.getWidth() - 510f, 56f, 0f));
+        GraphicsManager.drawImage(ScoreImages[2], new Vector3<>(GameWindow.getWidth() - 628f, 56f, 0f));
+        GraphicsManager.drawImage(ScoreImages[1], new Vector3<>(GameWindow.getWidth() - 569f, 56f, 0f));
+        GraphicsManager.drawImage(ScoreImages[0], new Vector3<>(GameWindow.getWidth() - 510f, 56f, 0f));
 
         if (currentScore >= 1000) {
-            GraphicsManager.drawString(Color.WHITE, "" + (currentScore / 1000) + "", new Vector3<Float>((float)(374 + 59), 16f, 0f));
+            GraphicsManager.drawString(Color.WHITE, "" + (currentScore / 1000) + "", new Vector3<>((float)(374 + 59), 16f, 0f));
         }
     }
 
     private void drawTimer() {
-        GraphicsManager.drawImage(timerLabel, new Vector3<Float>(GameWindow.getWidth() - 269f, 0f, 0f));
+        GraphicsManager.drawImage(timerLabel, new Vector3<>(GameWindow.getWidth() - 269f, 0f, 0f));
         int TimerNumber = startingAmountOfTimer / 200;
         AdvancedImage[] TimerImages = GameFont.getSymbolsfromNumber(TimerNumber);
-        GraphicsManager.drawImage(TimerImages[2], new Vector3<Float>(GameWindow.getWidth() - 280f, 56f, 0f));
-        GraphicsManager.drawImage(TimerImages[1], new Vector3<Float>(GameWindow.getWidth() - 221f, 56f, 0f));
-        GraphicsManager.drawImage(TimerImages[0], new Vector3<Float>(GameWindow.getWidth() - 162f, 56f, 0f));
+        GraphicsManager.drawImage(TimerImages[2], new Vector3<>(GameWindow.getWidth() - 280f, 56f, 0f));
+        GraphicsManager.drawImage(TimerImages[1], new Vector3<>(GameWindow.getWidth() - 221f, 56f, 0f));
+        GraphicsManager.drawImage(TimerImages[0], new Vector3<>(GameWindow.getWidth() - 162f, 56f, 0f));
     }
 
     private void drawPauseScreen() {
-        GraphicsManager.drawImage(pauseScreenBackground, new Vector3<Float>(0f, 0f,0f));
+        GraphicsManager.drawImage(pauseScreenBackground, new Vector3<>(0f, 0f,0f));
         menuButton.draw();
         optionButton.draw();
     }

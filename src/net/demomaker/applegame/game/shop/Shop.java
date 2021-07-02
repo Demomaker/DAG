@@ -27,7 +27,7 @@ public class Shop extends Entity {
   private int SHOP_BUTTON_Y_UPPER_LIMIT = 247;
   private int SHOP_BUTTON_Y_LOWER_LIMIT;
   private boolean finishedLoading = false;
-  private Vector3[][] buttonInitialPositions = new Vector3[NUMBER_OF_BUTTON_COLUMNS][NUMBER_OF_BUTTON_ROWS];
+  private Vector3<Float>[][] buttonInitialPositions = new Vector3[NUMBER_OF_BUTTON_COLUMNS][NUMBER_OF_BUTTON_ROWS];
   private int oldHeight = 0;
 
   private MovingButton shopButton;
@@ -76,13 +76,12 @@ public class Shop extends Entity {
     return finishedLoading;
   }
 
-  public void init() {
+  public void initGameButtons() {
     for(int i = 0; i < NUMBER_OF_BUTTON_COLUMNS; i++) {
       for(int j = 0; j < NUMBER_OF_BUTTON_ROWS; j++) {
         buttonInitialPositions[i][j] = new Vector3<>(10f + i * (10f + DEFAULT_BUTTON_WIDTH), 40f + j * (10 + DEFAULT_BUTTON_HEIGHT), 0f);
       }
     }
-    money = INITIAL_MONEY_AMOUNT;
     allyBuyButton = new Button();
     appleBuyButton = new Button();
     moneyIncreaseButton = new Button();
@@ -143,6 +142,11 @@ public class Shop extends Entity {
     finishedLoading = true;
   }
 
+  public void init() {
+    money = INITIAL_MONEY_AMOUNT;
+    initGameButtons();
+  }
+
   @Override
   public void draw() {
     super.draw();
@@ -157,7 +161,7 @@ public class Shop extends Entity {
     moneyIncrementImage.draw();
     allyBuyImage.draw();
     resetRedButton.draw();
-    GraphicsManager.drawString(Color.YELLOW,"Money: " + money, new Vector3<Float>(shopButton.getPosition().getX() + 25f, shopButton.getPosition().getY(), shopButton.getPosition().getZ()));
+    GraphicsManager.drawString(Color.YELLOW,"Money: " + money, new Vector3<>(shopButton.getPosition().getX() + 25f, shopButton.getPosition().getY(), shopButton.getPosition().getZ()));
   }
 
   @Override
@@ -279,4 +283,8 @@ public class Shop extends Entity {
       }
     }
   };
+
+  public void onResume() {
+    initGameButtons();
+  }
 }

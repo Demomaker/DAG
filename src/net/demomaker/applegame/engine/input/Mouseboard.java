@@ -7,6 +7,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 
 public class Mouseboard implements MouseListener, MouseMotionListener {
@@ -14,15 +15,25 @@ public class Mouseboard implements MouseListener, MouseMotionListener {
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		for(MouseboardListener mouseboardListener : mouseboardListeners) {
-			mouseboardListener.onMouseClicked(e);
+		try {
+			for(MouseboardListener mouseboardListener : mouseboardListeners) {
+				mouseboardListener.onMouseClicked(e);
+			}
+		}
+		catch (ConcurrentModificationException ex) {
+			ex.printStackTrace();
 		}
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		for(MouseboardListener mouseboardListener : mouseboardListeners) {
-			mouseboardListener.onMousePressed(e);
+		try {
+			for(MouseboardListener mouseboardListener : mouseboardListeners) {
+				mouseboardListener.onMousePressed(e);
+			}
+		}
+		catch (ConcurrentModificationException ex) {
+			ex.printStackTrace();
 		}
 	}
 
@@ -30,35 +41,46 @@ public class Mouseboard implements MouseListener, MouseMotionListener {
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		for(MouseboardListener mouseboardListener : mouseboardListeners) {
-			mouseboardListener.onMouseReleased(e);
+		try {
+			for (MouseboardListener mouseboardListener : mouseboardListeners) {
+				mouseboardListener.onMouseReleased(e);
+			}
+		}
+		catch (ConcurrentModificationException ex) {
+			ex.printStackTrace();
 		}
 
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		// TODO Auto-generated method stub
-		for(MouseboardListener mouseboardListener : mouseboardListeners) {
-			mouseboardListener.onMouseMoved(e);
+		try {
+			for(MouseboardListener mouseboardListener : mouseboardListeners) {
+				mouseboardListener.onMouseMoved(e);
+			}
+		}
+		catch(ConcurrentModificationException ex) {
+			ex.printStackTrace();
 		}
 	}
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		// TODO Auto-generated method stub
-		for(MouseboardListener mouseboardListener : mouseboardListeners) {
-			mouseboardListener.onMouseMoved(e);
+		try {
+			for (MouseboardListener mouseboardListener : mouseboardListeners) {
+				mouseboardListener.onMouseMoved(e);
+			}
+		}
+		catch(ConcurrentModificationException ex) {
+			ex.printStackTrace();
 		}
 	}
 

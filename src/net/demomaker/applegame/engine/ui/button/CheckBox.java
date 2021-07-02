@@ -3,9 +3,6 @@ package net.demomaker.applegame.engine.ui.button;
 import net.demomaker.applegame.engine.util.AdvancedImage;
 import net.demomaker.applegame.engine.util.ImageObserver;
 import net.demomaker.applegame.engine.util.Vector3;
-import net.demomaker.applegame.game.controller.DemomakerGame;
-
-import java.awt.*;
 
 public class CheckBox extends Button {
     private boolean isChecked = false;

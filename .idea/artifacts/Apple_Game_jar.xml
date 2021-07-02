@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Apple Game:jar">
+    <output-path>$PROJECT_DIR$/DAGv0_0_2</output-path>
+    <root id="archive" name="Apple Game.jar">
+      <element id="module-output" name="Apple Game" />
+    </root>
+  </artifact>
+</component>

@@ -16,6 +16,7 @@ public class Apple extends Entity {
     private final static Color DEFAULT_COLOR = Color.RED;
     private static final Random random = new Random();
     private static ArrayList<AppleListener> appleListenerList = new ArrayList<>();
+    private static ArrayList<Apple> apples = new ArrayList<>();
 
     public Apple() {
         super();
@@ -24,17 +25,33 @@ public class Apple extends Entity {
         setColor(DEFAULT_COLOR);
     }
 
+    public static ArrayList<Apple> getList() {
+        return apples;
+    }
+
+    public static void addToList(Apple apple) {
+        apples.add(apple);
+    }
+
+    public static void removeFromList(Apple apple) {
+        apples.remove(apple);
+    }
+
+    public static void clearList() {
+        apples.clear();
+    }
+
     @Override
     public void draw() {
         super.draw();
-        GraphicsManager.fillRectangle(getColor(), Math.round(getWidth()), Math.round(getHeight()), new Vector3<Float>(getPosition().getX(), getPosition().getY(), getPosition().getZ()));
+        GraphicsManager.fillRectangle(getColor(), Math.round(getWidth()), Math.round(getHeight()), new Vector3<>(getPosition().getX(), getPosition().getY(), getPosition().getZ()));
     }
 
     public static Apple generateNewApple() {
         Apple apple = new Apple();
         int appleX = random.nextInt(GameWindow.getWidth() - 10);
         int appleY = random.nextInt(GameWindow.getHeight() - 30);
-        apple.setPosition(new Vector3<Float>(appleX * 1.0f, appleY * 1.0f, 0f));
+        apple.setPosition(new Vector3<>(appleX * 1.0f, appleY * 1.0f, 0f));
         return apple;
     }
 

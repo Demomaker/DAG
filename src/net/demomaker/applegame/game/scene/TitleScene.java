@@ -13,20 +13,13 @@ import net.demomaker.applegame.game.sound.Sound;
 import net.demomaker.applegame.engine.util.AdvancedImage;
 import net.demomaker.applegame.engine.util.AssetRetreiver;
 
-import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Random;
 
 import static net.demomaker.applegame.game.consts.SharedObjectKeys.*;
 
 public class TitleScene implements Scene {
     private Ally titleAlly = null;
     private Apple titleApple = null;
-    private final Random random = new Random();
-    public boolean showFPS = false;
-    public String FPSstring;
     private boolean playSounds = false;
     private Button optionButton = new Button();
 
@@ -49,9 +42,8 @@ public class TitleScene implements Scene {
     public void init() {
         playSounds = (Boolean) SceneManager.getSharedObject(PlaySoundKey);
         titleApple = Apple.generateNewApple();
-        Apple appleArray[] = new Apple[1];
-        appleArray[0] = titleApple;
-        titleAlly = Ally.generateNewAlly(Arrays.asList(appleArray));
+        Apple.addToList(titleApple);
+        titleAlly = Ally.generateNewAlly();
         titleAlly.SetTarget(titleApple);
         initGameButtons();
         finishedLoading = true;
@@ -79,15 +71,12 @@ public class TitleScene implements Scene {
             titleAlly.draw();
         if(titleApple != null)
             titleApple.draw();
-        if (showFPS) {
-            GraphicsManager.drawString(Color.WHITE, FPSstring, new Vector3<Float>(0f, 10f, 0f));
-        }
     }
 
     @Override
     public void cleanup() {
         optionButton.setActive(false);
-        titleApple = null;
+        Apple.clearList();
     }
 
     @Override
@@ -114,7 +103,6 @@ public class TitleScene implements Scene {
     private Keyboard.KeyboardListener keyboardListener = new Keyboard.KeyboardListener() {
         @Override
         public void onKeyPressed(int key) {
-            if(SceneManager.getActiveScene() != SceneManager.getSceneByName("TitleScene")) return;
         }
 
         @Override
