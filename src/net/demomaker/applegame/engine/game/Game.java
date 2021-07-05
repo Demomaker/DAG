@@ -21,6 +21,7 @@ public abstract class Game extends Canvas implements Runnable {
     int updates = 0;
     final double ns = 1000000000.0 / 60.0;
     double delta = 0;
+    int oneSecond = 1000;
 
     while (running) {
       if(!SceneManager.activeSceneFinishedLoading()) continue;
@@ -31,13 +32,12 @@ public abstract class Game extends Canvas implements Runnable {
         updateGame((float)delta);
         updates++;
         delta--;
-
       }
 
       renderGame();
       frames++;
-      if (System.currentTimeMillis() - Timer > 1000) {
-        Timer += 1000;
+      if (System.currentTimeMillis() - Timer > oneSecond) {
+        Timer += oneSecond;
         GameWindow.setFPS(frames);
         GameWindow.setUpdates(updates);
         updates = 0;
