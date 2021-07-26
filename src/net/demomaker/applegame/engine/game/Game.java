@@ -11,10 +11,13 @@ public abstract class Game extends Canvas implements Runnable {
   public abstract void initGame();
   public abstract void renderGame();
   public abstract void updateGame(float deltaTime);
+  public void goFullScreen() {}
+  public void updateFPS() {}
+  public void updateUpdates() {}
   public void startGame() {}
   public void endGame() {}
-  public void run() {
-    initGame();
+  public void onException(Exception exception) {}
+  private void runGame() {
     long Timer = System.currentTimeMillis();
     long lastTime = System.nanoTime();
     int frames = 0;
@@ -24,12 +27,12 @@ public abstract class Game extends Canvas implements Runnable {
     int oneSecond = 1000;
 
     while (running) {
-      if(!SceneManager.activeSceneFinishedLoading()) continue;
+      if (!SceneManager.activeSceneFinishedLoading()) continue;
       long now = System.nanoTime();
       delta += (now - lastTime) / ns;
       lastTime = now;
       while (delta >= 1) {
-        updateGame((float)delta);
+        updateGame((float) delta);
         updates++;
         delta--;
       }
@@ -45,7 +48,17 @@ public abstract class Game extends Canvas implements Runnable {
       }
 
     }
-    stop();
+  }
+  public void run() {
+    try {
+      initGame();
+      runGame();
+      stop();
+    }
+    catch (Exception e) {
+      onException(e);
+      e.printStackTrace();
+    }
   }
 
   public synchronized void start() {
@@ -62,4 +75,31 @@ public abstract class Game extends Canvas implements Runnable {
       e.printStackTrace();
     }
   }
+
+  private GameWindow.GameWindowListener gameWindowListener = new GameWindow.GameWindowListener() {
+    @Override
+    public void onClose() {
+      endGame();
+    }
+
+    @Override
+    public void onStart() {
+      startGame();
+    }
+
+    @Override
+    public void onFullScreen() {
+      goFullScreen();
+    }
+
+    @Override
+    public void onFPSSet() {
+      updateFPS();
+    }
+
+    @Override
+    public void onUpdatesSet() {
+      updateUpdates();
+    }
+  };
 }

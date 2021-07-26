@@ -40,10 +40,9 @@ public class DemomakerGame extends Game {
 	private final Mouseboard mouseboard = new Mouseboard();
 
 	private boolean showFPS = false;
-	private boolean FullScreen = false;
 	private int winWIDTH = WIDTH;
 	private int winHEIGHT = HEIGHT;
-	private String FPSstring;
+	private String debugText;
 
 	private Keyboard.KeyboardListener keyboardListener = new Keyboard.KeyboardListener() {
 		@Override
@@ -151,14 +150,6 @@ public class DemomakerGame extends Game {
 	@Override
 	public void updateGame(float deltaTime) {
 		if(!SceneManager.getActiveScene().finishedLoading()) return;
-		if (Keyboard.keyPressed(KeyEvent.VK_F4)) {
-			FullScreen();
-			FullScreen = !FullScreen;
-		}
-
-		if (Keyboard.keyPressed(KeyEvent.VK_F3)) {
-			showFPS = !showFPS;
-		}
 		SceneManager.getActiveScene().update(deltaTime);
 	}
 
@@ -180,14 +171,14 @@ public class DemomakerGame extends Game {
 		SceneManager.getActiveScene().draw();
 		if (showFPS) {
 			g.setColor(Color.WHITE);
-			g.drawString(FPSstring, 0, 10);
+			g.drawString(debugText, 0, 10);
 		}
 		GraphicsManager.cleanup();
 		bs.show();
 	}
 
-	// loading JFrame
-	public void FullScreen() {
+	@Override
+	public void goFullScreen() {
 		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		frame.setVisible(true);
 		frame.setAlwaysOnTop(true);
@@ -197,38 +188,54 @@ public class DemomakerGame extends Game {
 		frame.setResizable(true);
 	}
 
-	public static void main(String[] args) {
-		new DemomakerGame();
-		GameWindow.start();
+	@Override
+	public void updateFPS() {
+		updateDebugText();
 	}
 
-	private GameWindow.GameWindowListener gameWindowListener = new GameWindow.GameWindowListener() {
-		@Override
-		public void onClose() {
-			endGame();
-		}
+	@Override
+	public void updateUpdates() {
+		updateDebugText();
+	}
 
-		@Override
-		public void onStart() {
-			startGame();
-		}
+	@Override
+	public void onException(Exception exception) {
+	}
 
-		@Override
-		public void onFullScreen() {
-			FullScreen();
-		}
+	public void updateDebugText() {
+		String initialString = "Debug Text";
+		String sizeText = getSizeText((GameWindow.getWidth() - 16), (GameWindow.getHeight() - 39));
+		String fpsText = getFPSText(GameWindow.getFPS());
+		String updatesText = getUpdatesText(GameWindow.getUpdates());
+		String[] texts = new String[]{ initialString, sizeText, fpsText, updatesText };
+		debugText = concatDebugText(texts);
+	}
 
-		@Override
-		public void onFPSSet() {
-			FPSstring = ("Size:" + (GameWindow.getWidth() - 16) + ", " + (GameWindow.getHeight() - 39) + " | " + GameWindow.getFPS()
-					+ " FPS | " + GameWindow.getUpdates() + " ups");
+	public String concatDebugText(String[] strings) {
+		if(strings.length < 1) return "";
+		String text = strings[0];
+		for(int i = 0; i < strings.length - 1; i++) {
+			if(!strings[i + 1].equals(""))
+				text = concatDebugText(text, strings[i+1]);
 		}
+		return text;
+	}
 
-		@Override
-		public void onUpdatesSet() {
-			FPSstring = ("Size:" + (GameWindow.getWidth() - 16) + ", " + (GameWindow.getHeight() - 39) + " | " + GameWindow.getFPS()
-					+ " FPS | " + GameWindow.getUpdates() + " ups");
-		}
+	public String concatDebugText(String firstPart, String secondPart) {
+		String seperationCharacter = " | ";
+		return firstPart + seperationCharacter + secondPart;
+	}
 
-	};
+	public String getFPSText(int fps) {
+		return fps + " FPS";
+	}
+
+	public String getSizeText(int width, int height) {
+		return "Size: " + width + ", " + height;
+	}
+
+	public String getUpdatesText(int updates) {
+		return updates + " ups";
+	}
 }
+

@@ -1,8 +1,9 @@
 package net.demomaker.applegame.engine.graphics;
 
+import net.demomaker.applegame.engine.game.Game;
 import net.demomaker.applegame.engine.scene.SceneManager;
-import net.demomaker.applegame.game.shop.ShopActQueue;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 public class GameWindow {
@@ -79,6 +80,10 @@ public class GameWindow {
 
   public static String getName() {
     return GameWindow.name;
+  }
+
+  public static void start(Game game) {
+    start();
   }
 
   public static abstract class GameWindowListener {
